@@ -24,6 +24,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {http} from './utils/http';
 import {useStateCallback} from './utils/useStateCallback';
 import {Tab} from './components/layout/header';
+import {TrendContainer} from './components/trend/trend';
 
 
 const App: () => Node = () => {
@@ -43,10 +44,8 @@ const App: () => Node = () => {
     },
   ];
 
-  const [trends, setTrends] = useState([]);
-
-  const [currTab, _setCurrTab] = useStateCallback('hot');
   const loadTrends = tab => {
+    /* 게시글 로딩 */
     (tab === 'hot' ? http.getHottestTrends() : http.getTrends())
       .then(res => {
         // this.isLoadingTrends = false;
@@ -63,16 +62,16 @@ const App: () => Node = () => {
       });
   };
 
+  const [trends, setTrends] = useState([]);
+  const [currTab, _setCurrTab] = useStateCallback('hot');
+
   const setCurrTab = newTab => {
     _setCurrTab(newTab);
     loadTrends(newTab);
   };
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   useEffect(() => {
+    /* 트랜드 변경 시 출력 (디버깅용) */
     for (let trend of trends) {
       console.log(
         trend.id,
@@ -86,63 +85,35 @@ const App: () => Node = () => {
   }, [trends]);
 
   useEffect(() => {
+    /* 앱 실행 시 트랜드 로딩 */
     loadTrends(currTab);
   }, []);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <Gae9SafeAreaView darkMode={isDarkMode}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'}/>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <TabWrapper>
-          {tabs.map((tab, idx) => {
-            return (
-              <Tab
-                idx={idx}
-                tab={tab}
-                currTab={currTab}
-                setCurrTab={setCurrTab}
-                tabs={tabs}
-              />
-            );
-          })}
-        </TabWrapper>
+      <TabWrapper>
+        {tabs.map((tab, idx) => {
+          return (
+            <Tab
+              idx={idx}
+              tab={tab}
+              currTab={currTab}
+              setCurrTab={setCurrTab}
+              tabs={tabs}
+            />
+          );
+        })}
+      </TabWrapper>
 
-        <ListContainer
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <TrendContainer
-            data={trends}
-            renderItem={({item}) => (
-              <Trend>
-                <TrendThumb source={{uri: item.thumb_url}}/>
-                <TrendTextView>
-                  <TrendTitle numberOfLines={2}>
-                    {item.title}
-                  </TrendTitle>
-                  <TrendMeta>
-                    <TrendMetaViewText>
-                      {item.view_cnt} view&nbsp;&nbsp;&nbsp;&nbsp;
-                    </TrendMetaViewText>
-                    <TrendMetaCommentText>
-                      <TrendCommentImage source={require('./static/comment.png')} />
-                      &nbsp;{item.comments_cnt}
-                    </TrendMetaCommentText>
-                  </TrendMeta>
-                </TrendTextView>
-              </Trend>
-            )}
-          />
-        </ListContainer>
-      </ScrollView>
-    </SafeAreaView>
+      <TrendContainer trends={trends} isdarkMode={isDarkMode}/>
+    </Gae9SafeAreaView>
   );
 };
 
-
-const ListContainer = styled.View``;
+const Gae9SafeAreaView = styled.SafeAreaView`
+  background-color: ${props => props.darkMode ? Colors.darker : Colors.white}
+`;
 
 const TabWrapper = styled.View`
   flex-direction: row;
@@ -156,47 +127,6 @@ const TabWrapper = styled.View`
   border-color: #305060;
   border-radius: 10;
   text-align: center;
-`;
-
-const TrendContainer = styled.FlatList``;
-
-const Trend = styled.View`
-  padding: 1.0%;
-  flex-direction: row;
-`;
-const TrendThumb = styled.Image`
-  width: 70;
-  height: 70;
-  border-radius: 10;
-`;
-const TrendTextView = styled.View`
-  flex-direction: column;
-  flex: 1;
-  padding-top: 6;
-  padding-left: 8;
-  font-size: 12;
-  border-bottom-width: 1;
-  border-bottom-color: #ddd;
-`;
-
-const TrendTitle = styled.Text`
-  height: 40;
-  color: #000;
-`;
-const TrendMeta = styled.Text`
-  color: blue;
-  text-align: right;
-`;
-
-const TrendMetaViewText = styled.Text`
-  color: #00bfff;
-`;
-const TrendCommentImage = styled.Image`
-  width: 14;
-  height: 14;
-`;
-const TrendMetaCommentText = styled.Text`
-  color: #000;
 `;
 
 export default App;
