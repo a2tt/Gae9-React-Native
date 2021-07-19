@@ -50,6 +50,10 @@ class Http {
     return instance.get(`${constants.API_URL}/trend`);
   }
 
+  getNsfwTrends() {
+    return instance.get(`${constants.API_URL}/v2/trend/nsfw`);
+  }
+
   getDailyTrends(dateStr) {
     return instance.get(`${constants.API_URL}/trend/${dateStr}`);
   }

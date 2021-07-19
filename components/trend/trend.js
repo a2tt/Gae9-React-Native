@@ -39,7 +39,7 @@ const Trend: () => Node = props => {
 
 export const TrendContainer: () => Node = props => {
   return (
-    <TrendScrollView
+    <TrendContainerView
       contentInsetAdjustmentBehavior="automatic"
       darkMode={props.isDarkMode}>
       <TrendFlatList
@@ -47,19 +47,20 @@ export const TrendContainer: () => Node = props => {
         renderItem={({item}) => (
           <Trend trend={item}/>
         )}
+        contentContainerStyle={{ paddingBottom: 300 }}
       />
-    </TrendScrollView>
+    </TrendContainerView>
   );
 };
 
-const TrendScrollView = styled.ScrollView`
-  background-color: ${props => props.darkMode ? Colors.darker : Colors.white}
+const TrendContainerView = styled.View`
+  background-color: ${props => (props.darkMode ? Colors.darker : Colors.white)};
 `;
 
 const TrendFlatList = styled.FlatList``;
 
 const TrendView = styled.View`
-  padding: 1.0%;
+  padding: 1%;
   flex-direction: row;
 `;
 const TrendThumbImage = styled.Image`
