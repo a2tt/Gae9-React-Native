@@ -47,9 +47,8 @@ const App: () => Node = () => {
 
   const loadTrends = () => {
     /* 게시글 로딩 */
-    if (loading) {
-      return;
-    }
+    if (loading) return;
+
     setLoading(true);
     (currTab === 'hot'
         ? http.getHottestTrends()
@@ -58,18 +57,20 @@ const App: () => Node = () => {
           : http.getNsfwTrends()
     )
       .then(res => {
-        // this.isLoadingTrends = false;
-        // this.last_update_at = res.data.response.last_update_at;
-        // this.nextMaxId = res.data.response.next_max_id;
-        let lastId = 0;
+        // let lastId = 0;
         let _trends = res.data.response.trends.map(item => {
           item.site_description = item.sites.map(it => it.title).join(', ');
-          lastId = item.trend_id;
           return item;
         });
 
-        setTrends(prev => prev.concat(_trends));
-        setMaxId(lastId - 1); // 트랜드 로드 시 maxId 이하를 가져옴
+        if (res.data.response.next_max_id) {
+          setMaxId(res.data.response.next_max_id); // 트랜드 로드 시 maxId 이하를 가져옴
+        }
+
+        setTrends(prev => {
+          prev[currTab] = prev[currTab].concat(_trends);
+          return prev;
+        });
       })
       .catch(e => {
         console.error(e);
@@ -79,32 +80,38 @@ const App: () => Node = () => {
       });
   };
 
-  const [trends, setTrends] = useState([]);
-  const [currTab, _setCurrTab] = useStateCallback('new');
+  const [trends, setTrends] = useState(
+    tabs
+      .map(item => item.name)
+      .reduce((obj, x) => {
+        obj[x] = [];
+        return obj;
+      }, {}),
+  );
+  const [currTab, _setCurrTab] = useStateCallback('new'); // setState 에 대한 async callback
   const [maxId, setMaxId] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const setCurrTab = newTab => {
-    _setCurrTab(newTab);
+    _setCurrTab(newTab, () => {});
   };
 
   useEffect(() => {
-    /* 트랜드 변경 시 출력 (디버깅용) */
-    for (let trend of trends) {
-      console.log(
-        trend.id,
-        trend.title,
-        trend.thumb_url,
-        trend.view_cnt,
-        trend.comments_cnt,
-      );
+    if (trends[currTab].length === 0) {
+      loadTrends();
     }
-    console.log(trends.length, maxId);
+  }, [currTab]);
+
+  useEffect(() => {
+    /* 트랜드 변경 시 출력 (디버깅용) */
+    // for (const tab in trends) {
+    //   console.log(tab, trends[tab].length);
+    // }
+    // console.log(Object.keys(trends).length, maxId);
   }, [trends]);
 
   useEffect(() => {
-    /* 앱 실행 시 트랜드 로딩 */
-    loadTrends();
+    console.log('first render')
   }, []);
 
   return (
@@ -140,7 +147,7 @@ const App: () => Node = () => {
         </MoreView>
       )}
 
-      <TrendContainer trends={trends} isdarkMode={isDarkMode}/>
+      <TrendContainer trends={trends[currTab]} isdarkMode={isDarkMode}/>
     </Gae9SafeAreaView>
   );
 };

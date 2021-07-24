@@ -25,7 +25,7 @@ export const FontAwesomeSpin: () => Node = props => {
 
   return (
     <Animated.View style={{transform: [{rotate}]}}>
-      <FontAwesomeIcon  style={props.style} icon={props.icon} />
+      <FontAwesomeIcon style={props.style} icon={props.icon} />
     </Animated.View>
   );
 };

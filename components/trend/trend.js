@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -38,15 +38,21 @@ const Trend: () => Node = props => {
 };
 
 export const TrendContainer: () => Node = props => {
+  const renderItem = ({item}) => (
+    <Trend trend={item}/>
+  );
+
+  const memoizedValue = useCallback(renderItem, []);
+  const keyExtractor = useCallback(item => item.id,[]);
+
   return (
     <TrendContainerView
       contentInsetAdjustmentBehavior="automatic"
       darkMode={props.isDarkMode}>
       <TrendFlatList
         data={props.trends}
-        renderItem={({item}) => (
-          <Trend trend={item}/>
-        )}
+        renderItem={memoizedValue}
+        keyExtractor={keyExtractor}
         contentContainerStyle={{ paddingBottom: 300 }}
       />
     </TrendContainerView>
