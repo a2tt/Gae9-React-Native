@@ -9,37 +9,44 @@ import {
   View,
   FlatList,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import styled from 'styled-components/native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-
-const Trend: () => Node = props => {
+const TrendList: () => Node = props => {
   return (
-    <TrendView>
-      <TrendThumbImage source={{uri: props.trend.thumb_url}}/>
-      <TrendTextView>
-        <TrendTitleText numberOfLines={2}>
-          {props.trend.title}
-        </TrendTitleText>
-        <TrendMetaText>
-          <TrendMetaViewText>
-            {props.trend.view_cnt} view&nbsp;&nbsp;&nbsp;&nbsp;
-          </TrendMetaViewText>
-          <TrendMetaCommentText>
-            <TrendCommentImage source={require('../../static/comment.png')}/>
-            &nbsp;{props.trend.comments_cnt}
-          </TrendMetaCommentText>
-        </TrendMetaText>
-      </TrendTextView>
-    </TrendView>
+    <TouchableOpacity
+      onPress={e => {
+        props.navigation.navigate('TrendDetail', {
+          trendCid: props.trend.id,
+        });
+      }}>
+      <TrendView>
+        <TrendThumbImage source={{uri: props.trend.thumb_url}}/>
+        <TrendTextView>
+          <TrendTitleText numberOfLines={2}>
+            {props.trend.title}
+          </TrendTitleText>
+          <TrendMetaText>
+            <TrendMetaViewText>
+              {props.trend.view_cnt} view&nbsp;&nbsp;&nbsp;&nbsp;
+            </TrendMetaViewText>
+            <TrendMetaCommentText>
+              <TrendCommentImage source={require('../../static/comment.png')}/>
+              &nbsp;{props.trend.comments_cnt}
+            </TrendMetaCommentText>
+          </TrendMetaText>
+        </TrendTextView>
+      </TrendView>
+    </TouchableOpacity>
   );
 };
 
 export const TrendContainer: () => Node = props => {
   const renderItem = ({item}) => (
-    <Trend trend={item}/>
+    <TrendList trend={item} navigation={props.navigation}/>
   );
 
   const memoizedValue = useCallback(renderItem, []);

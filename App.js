@@ -6,9 +6,13 @@
  * @flow strict-local
  */
 
+import 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import React, {useState, useEffect} from 'react';
 import type {Node} from 'react';
 import {
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -24,11 +28,25 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {http} from './utils/http';
 import {useStateCallback} from './utils/useStateCallback';
 import {Tab} from './components/layout/header';
-import {TrendContainer} from './components/trend/trend';
+import {TrendContainer} from './components/trend/TrendList';
+import {TrendDetail} from './components/trend/TrendDetail';
 import {FontAwesomeSpin} from './utils/fontAweSome';
 import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 
+const Stack = createStackNavigator();
+
 const App: () => Node = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={Home} options={{title: 'Gae9', headerShown: false}}/>
+        <Stack.Screen name="TrendDetail" component={TrendDetail}/>
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+const Home: () => Node = props => {
   const isDarkMode = useColorScheme() === 'dark';
   const tabs = [
     {
@@ -147,7 +165,7 @@ const App: () => Node = () => {
         </MoreView>
       )}
 
-      <TrendContainer trends={trends[currTab]} isdarkMode={isDarkMode}/>
+      <TrendContainer navigation={props.navigation} trends={trends[currTab]} isdarkMode={isDarkMode}/>
     </Gae9SafeAreaView>
   );
 };
