@@ -12,7 +12,9 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  StyleSheet,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
 
@@ -59,10 +61,15 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
     }
     const deviceWidth = Dimensions.get('window').width;
     return (
-      <TrendImage
+      <FastImage
+        style={[
+          styles.image,
+          {
+            width: deviceWidth,
+            height: (deviceWidth * size[1]) / size[0],
+          },
+        ]}
         source={{uri: item}}
-        // width={deviceWidth.toFixed(1)}
-        height={((deviceWidth * size[1]) / size[0]).toFixed(1)}
       />
     );
   };
@@ -90,21 +97,17 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
 
 const ImageFlatList = styled.FlatList``;
 
-// width: ${props => props.width};
-const TrendImage = styled.Image`
-  resize-mode: contain;
-  width: 100%;
-  height: ${props => props.height};
-  margin: 0 auto;
-  background-color: #cccccc;
-  margin-bottom: 20;
-`;
-
-const TrendScrollView = styled.ScrollView`
-`;
+const TrendScrollView = styled.ScrollView``;
 
 const HeaderView = styled.View``;
 
 const ContentView = styled.View`
   text-align: center;
 `;
+
+const styles = StyleSheet.create({
+  image: {
+    backgroundColor: '#cccccc',
+    marginTop: 0,
+  },
+});
