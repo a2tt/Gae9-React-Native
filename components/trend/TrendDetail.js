@@ -17,6 +17,7 @@ import {
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
+import {TrendSiteContainer} from './TrendSite';
 
 export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;
@@ -78,32 +79,36 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
   const keyExtractor = useCallback(item => item, []);
 
   return (
-    <>
-      <ContentView>
-        {Object.keys(imageSize).length > 0 && (
-          <ImageFlatList
-            data={Object.keys(imageSize)}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-            contentContainerStyle={{paddingBottom: 300}}
-          />
-        )}
-      </ContentView>
-
-      <Text>end</Text>
-    </>
+    <ContentView>
+      {Object.keys(imageSize).length > 0 && (
+        <ImageFlatList
+          data={Object.keys(imageSize)}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          ListFooterComponent={(<BelowImage/>)}
+        />
+      )}
+    </ContentView>
   );
 };
 
-const ImageFlatList = styled.FlatList``;
+const BelowImage: () => Node = props => {
+  return (
+    <View>
+      <TrendSiteContainer/>
+    </View>
+  );
+};
+
+const ImageFlatList = styled.FlatList`
+  text-align: center;
+`;
 
 const TrendScrollView = styled.ScrollView``;
 
 const HeaderView = styled.View``;
 
-const ContentView = styled.View`
-  text-align: center;
-`;
+const ContentView = styled.View``;
 
 const styles = StyleSheet.create({
   image: {
