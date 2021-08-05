@@ -21,7 +21,7 @@ import {TrendSiteContainer} from './TrendSite';
 
 export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;
-  const [trend, setTrend] = useState({});
+  const [trend, setTrend] = useState({posts: []});
   const [imageSize, setImageSize] = useState({});
   const [myTrendAction, setMyTrendAction] = useState({good_cnt: 0, bad_cnt: 0});
 
@@ -85,17 +85,17 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
           data={Object.keys(imageSize)}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
-          ListFooterComponent={(<BelowImage/>)}
+          ListFooterComponent={(<BelowImage trend={trend}/>)}
         />
       )}
     </ContentView>
   );
 };
 
-const BelowImage: () => Node = props => {
+const BelowImage: () => Node = ({trend}) => {
   return (
     <View>
-      <TrendSiteContainer/>
+      <TrendSiteContainer posts={trend.posts}/>
     </View>
   );
 };

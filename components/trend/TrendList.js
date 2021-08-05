@@ -1,16 +1,6 @@
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import React, {useCallback} from 'react';
 import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  Text,
-  useColorScheme,
-  View,
-  FlatList,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';

@@ -35,6 +35,10 @@ import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 
 const Stack = createStackNavigator();
 
+let moment = require('moment');
+require('moment/locale/ko');
+moment.locale('ko');
+
 const App: () => Node = () => {
   return (
     <NavigationContainer>
