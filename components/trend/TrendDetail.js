@@ -18,12 +18,14 @@ import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
 import {TrendSiteContainer} from './TrendSite';
+import {TrendLikeContainer} from './TrendLike';
 
 export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;
   const [trend, setTrend] = useState({posts: []});
   const [imageSize, setImageSize] = useState({});
   const [myTrendAction, setMyTrendAction] = useState({good_cnt: 0, bad_cnt: 0});
+  const [expression, setExpression] = useState({good_cnt: 0, bad_cnd: 0});
 
   useEffect(() => {
     // 첫 렌더링 시, 트렌드 데이터를 가져온다.
@@ -40,6 +42,7 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
             _imageSize[imageUrl] = values[idx];
           });
           setImageSize(_imageSize);
+          setExpression(_trend.trend_data.expression);
           setTrend(_trend);
         },
       );
@@ -85,17 +88,21 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
           data={Object.keys(imageSize)}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
-          ListFooterComponent={(<BelowImage trend={trend}/>)}
+          ListFooterComponent={(<BelowImage trend={trend} expression={expression} setExpression={setExpression}/>)}
         />
       )}
     </ContentView>
   );
 };
 
-const BelowImage: () => Node = ({trend}) => {
+const BelowImage: () => Node = ({trend, expression, setExpression}) => {
   return (
     <View>
-      <TrendSiteContainer posts={trend.posts}/>
+      <TrendLikeContainer
+        expression={expression}
+        setExpression={setExpression}
+      />
+      <TrendSiteContainer posts={trend.posts} />
     </View>
   );
 };
