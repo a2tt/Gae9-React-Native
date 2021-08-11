@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import type {Node} from 'react';
 import {Text, View, TouchableOpacity, StyleSheet, Linking} from 'react-native';
 import TimeAgo from 'react-native-timeago';
@@ -34,18 +34,43 @@ const TrendSite: () => Node = ({post}) => {
 };
 
 export const TrendSiteContainer: () => Node = ({posts}) => {
+  const defaultNum = 3;
+  const [showAll, setShowAll] = useState(false);
+  const [visibleSites, setVisibleSites] = useState([]);
+
+  useEffect(() => {
+    posts.length <= defaultNum ? setShowAll(true) : setShowAll(false);
+    applyVisiblility();
+  }, [posts]);
+
+  useEffect(() => {
+    applyVisiblility();
+  }, [showAll]);
+
+  const applyVisiblility = () => {
+    let limit = showAll ? posts.length : defaultNum;
+    setVisibleSites(posts.slice(0, limit));
+  };
+
   return (
     <TrendSiteContainerView>
       <SiteHeaderView>
-        <FontAwesomeIcon
-          icon={faExternalLinkAlt}
-          size={10}
-          style={{flex: 1, paddingTop: 5}}
-        />
-        <Text>&nbsp;출처</Text>
+        <SiteHeaderTextView>
+          <FontAwesomeIcon
+            icon={faExternalLinkAlt}
+            size={10}
+            style={{flex: 1, paddingTop: 5}}
+          />
+          <Text>&nbsp;출처</Text>
+        </SiteHeaderTextView>
+        {!showAll && (
+          <LoadMoreTouchable onPress={e => setShowAll(true)}>
+            <LoadMoreText>더보기</LoadMoreText>
+          </LoadMoreTouchable>
+        )}
       </SiteHeaderView>
       <View>
-        {posts && posts.map(post => <TrendSite post={post} key={post.id} />)}
+        {visibleSites.length > 0 && visibleSites.map(post => <TrendSite post={post} key={post.id}/>)}
       </View>
     </TrendSiteContainerView>
   );
@@ -59,14 +84,33 @@ const TrendSiteContainerView = styled.View`
 `;
 
 const SiteHeaderView = styled.View`
+  flex-direction: row;
+  border-bottom-color: #cccccc;
+  border-bottom-width: 1;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const SiteHeaderTextView = styled.View`
+  flex-direction: row;
+  align-items: center;
   padding-top: 10;
   padding-bottom: 10;
   padding-right: 8;
   padding-left: 8;
-  border-bottom-color: #cccccc;
-  border-bottom-width: 1;
-  flex-direction: row;
-  align-items: center;
+`;
+
+const LoadMoreTouchable = styled.TouchableOpacity`
+  border-width: 1px;
+  padding-top: 2;
+  padding-bottom: 2;
+  padding-right: 8;
+  padding-left: 8;
+  border-radius: 6;
+  border-color: #777;
+`;
+const LoadMoreText = styled.Text`
+  color: #777;
 `;
 
 const TrendSiteView = styled.View`
