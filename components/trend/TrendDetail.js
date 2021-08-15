@@ -19,7 +19,8 @@ import styled from 'styled-components/native';
 import {http} from '../../utils/http';
 import {TrendSiteContainer} from './TrendSite';
 import {TrendLikeContainer} from './TrendLike';
-import {CommentContainer} from '../comment/comment';
+import {CommentContainer} from '../comment/Comment';
+import {CommentWrite} from '../comment/CommentWrite';
 
 export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;
@@ -84,27 +85,37 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
 
   return (
     <ContentView>
-      {Object.keys(imageSize).length > 0 && (
-        <ImageFlatList
-          data={Object.keys(imageSize)}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          ListFooterComponent={(<BelowImage trend={trend} expression={expression} setExpression={setExpression}/>)}
-        />
-      )}
+      <View style={{flex: 1}}>
+        {Object.keys(imageSize).length > 0 && (
+          <ImageFlatList
+            data={Object.keys(imageSize)}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            ListFooterComponent={(
+              <BelowImage
+                route={route}
+                navigation={navigation}
+                trend={trend}
+                expression={expression}
+                setExpression={setExpression}/>
+            )}
+          />
+        )}
+      </View>
+      <CommentWrite trendCid={trendCid}/>
     </ContentView>
   );
 };
 
-const BelowImage: () => Node = ({trend, expression, setExpression}) => {
+const BelowImage: () => Node = ({route, navigation, trend, expression, setExpression}) => {
   return (
     <View>
       <TrendLikeContainer
         expression={expression}
         setExpression={setExpression}
       />
-      <TrendSiteContainer posts={trend.posts} />
-      <CommentContainer trendCid={trend.id}/>
+      <TrendSiteContainer posts={trend.posts}/>
+      <CommentContainer route={route} navigation={navigation} trendCid={trend.id}/>
     </View>
   );
 };
@@ -117,7 +128,9 @@ const TrendScrollView = styled.ScrollView``;
 
 const HeaderView = styled.View``;
 
-const ContentView = styled.View``;
+const ContentView = styled.View`
+  flex: 1;
+`;
 
 const styles = StyleSheet.create({
   image: {

@@ -20,10 +20,13 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faComments} from '@fortawesome/free-solid-svg-icons';
 import TimeAgo from 'react-native-timeago';
 import {stringColor} from '../../utils/stringColor';
+import {commentWrittenState} from '../../utils/state';
+import {useRecoilState} from 'recoil/native/recoil';
 
 let moment = require('moment');
 
-export const CommentContainer: () => Node = ({trendCid}) => {
+export const CommentContainer: () => Node = ({route, navigation, trendCid}) => {
+  const [commentWritten] = useRecoilState(commentWrittenState);
   const [loaded, setLoaded] = useState(false);
   const [comments, setComments] = useState([]);
 
@@ -34,14 +37,14 @@ export const CommentContainer: () => Node = ({trendCid}) => {
     http.getComments(trendCid).then(res => {
       setComments(res.data.response.comments);
     });
-  }, [trendCid]);
+  }, [trendCid, commentWritten]);
 
   useEffect(() => {
     setLoaded(true);
   }, [comments]);
 
   const renderItem = ({item}) => (
-    <Comment comment={item}/>
+    <Comment navigation={navigation} comment={item}/>
   );
 
   return (
@@ -66,8 +69,8 @@ export const CommentContainer: () => Node = ({trendCid}) => {
   );
 };
 
-const Comment: () => Node = ({comment}) => {
-  const time = moment(comment.created_at).utcOffset('+09:00', true);
+export const Comment: () => Node = ({navigation, comment}) => {
+  const time = moment(comment.created_at);
 
   return (
     <CommentView depth={comment.depth} my={comment.my}>
@@ -85,11 +88,16 @@ const Comment: () => Node = ({comment}) => {
       <DataView>
         <UsernameText>{comment.username}</UsernameText>
         <Text>{comment.content}</Text>
-        <MetaText>
-          <TimeAgo style={styles.timeAgo} time={time}/>
-          {'     '}
-          답글 달기
-        </MetaText>
+        <MetaView>
+          <TimeAgoText>
+            <TimeAgo style={styles.timeAgo} time={time}/>
+            {'     '}
+          </TimeAgoText>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('WriteReplyComment', {comment, trendCid: comment.cid})}>
+            <ReplyBtnText>답글 달기</ReplyBtnText>
+          </TouchableOpacity>
+        </MetaView>
       </DataView>
     </CommentView>
   );
@@ -145,8 +153,18 @@ const UsernameText = styled.Text`
   font-size: 12;
 `;
 
-const MetaText = styled.Text`
+const MetaView = styled.View`
   margin-top: 6;
+  align-items: center;
+  flex-direction: row;
+`;
+
+const TimeAgoText = styled.Text`
+  font-size: 12;
+  color: #999;
+`;
+
+const ReplyBtnText = styled.Text`
   font-size: 12;
   color: #999;
 `;

@@ -1,9 +1,11 @@
 import 'react-native-gesture-handler';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import type {Node} from 'react';
 import {
   View,
   Keyboard,
+  Text,
+  TextInput,
 } from 'react-native';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
@@ -16,26 +18,45 @@ import {Comment} from './Comment';
 /**
  * 대댓글 작성 페이지
  * */
-export const ReplyCommentWrite: () => Node = ({}) => {
+export const ReplyCommentWrite: () => Node = ({route, navigation}) => {
+  const comment = route.params.comment;
+  const trendCid = route.params.trendCid;
+
+  useEffect(() => {
+    navigation.setOptions({title: '댓글 작성'});
+  }, []);
+
   return (
-    <View>
-      <Comment comment={{}}/>
+    <View style={{backgroundColor: 'white'}}>
+      <Comment comment={comment}/>
+      <CommentWrite
+        trendCid={trendCid}
+        parentId={comment.id}
+        cb={() => navigation.goBack()}
+      />
     </View>
   );
 };
 
-export const CommentWrite: () => Node = ({trendCid}) => {
+/**
+ * 디테일뷰 하단 댓글 작성 컴포넌트
+ * */
+export const CommentWrite: () => Node = ({trendCid, parentId = null, cb = null}) => {
+  const multiline = !!parentId;
   const [, setCommentWritten] = useRecoilState(commentWrittenState);
   const [text, setText] = useState('');
 
   const writeComment = () => {
     console.log(text);
     http
-      .createComment(trendCid, text)
+      .createComment(trendCid, text, parentId)
       .then(res => {
         Keyboard.dismiss();
         setText('');
         setCommentWritten(Date.now());
+        if (cb) {
+          cb();
+        }
       })
       .catch(e => {
         console.error(e);
@@ -45,6 +66,7 @@ export const CommentWrite: () => Node = ({trendCid}) => {
   return (
     <CommentWriteView>
       <CommentInput
+        multiline={multiline}
         defaultValue={text}
         onChangeText={_text => setText(_text)}
         placeholder="댓글을 작성해보세요."
@@ -77,7 +99,7 @@ const CommentInput = styled.TextInput`
   margin-left: 6;
   padding-right: 10;
   padding-left: 10;
-  height: 40;
+  height: ${props => (props.multiline ? 'auto' : 40)};
   border-width: 1px;
   border-color: #ccc;
   border-radius: 10;

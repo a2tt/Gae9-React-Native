@@ -29,6 +29,7 @@ import {useStateCallback} from './utils/useStateCallback';
 import {Tab} from './components/layout/header';
 import {TrendContainer} from './components/trend/TrendList';
 import {TrendDetail} from './components/trend/TrendDetail';
+import {ReplyCommentWrite} from './components/comment/CommentWrite';
 import {FontAwesomeSpin} from './utils/fontAweSome';
 
 const Stack = createStackNavigator();
@@ -44,6 +45,7 @@ const App: () => Node = () => {
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Home" component={Home} options={{title: 'Gae9', headerShown: false}}/>
           <Stack.Screen name="TrendDetail" component={TrendDetail}/>
+          <Stack.Screen name="WriteReplyComment" component={ReplyCommentWrite}/>
         </Stack.Navigator>
       </NavigationContainer>
     </RecoilRoot>
