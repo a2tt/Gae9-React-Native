@@ -19,6 +19,7 @@ import {http} from '../../utils/http';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faComments} from '@fortawesome/free-solid-svg-icons';
 import TimeAgo from 'react-native-timeago';
+import {stringColor} from '../../utils/stringColor';
 
 let moment = require('moment');
 
@@ -32,15 +33,11 @@ export const CommentContainer: () => Node = ({trendCid}) => {
     }
     http.getComments(trendCid).then(res => {
       setComments(res.data.response.comments);
-      console.log(res.data.response.comments.length);
     });
   }, [trendCid]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoaded(true);
-      console.log('###');
-    }, 3000);
+    setLoaded(true);
   }, [comments]);
 
   const renderItem = ({item}) => (
@@ -74,7 +71,17 @@ const Comment: () => Node = ({comment}) => {
 
   return (
     <CommentView depth={comment.depth}>
-      <FastImage style={styles.profileImage}/>
+      <ProfileImageView>
+        <FastImage
+          style={[
+            styles.profileImage,
+            {
+              backgroundColor: '#' + stringColor(comment.username),
+            },
+          ]}
+        />
+        <ProfileImageText>{comment.username.slice(0, 5)}</ProfileImageText>
+      </ProfileImageView>
       <DataView>
         <UsernameText>{comment.username}</UsernameText>
         <Text>{comment.content}</Text>
@@ -111,6 +118,21 @@ const CommentView = styled.View`
   margin-left: ${props => (props.depth - 1) * 14};
 `;
 
+const ProfileImageView = styled.View`
+  margin-top: 8;
+  margin-bottom: 8;
+  margin-right: 10;
+  width: 44;
+  height: 44;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ProfileImageText = styled.Text`
+  color: #fff;
+  height: 20;
+`;
 const DataView = styled.View`
   flex: 1;
   padding-top: 10;
@@ -119,6 +141,7 @@ const DataView = styled.View`
 const UsernameText = styled.Text`
   font-weight: 700;
   margin-bottom: 2;
+  font-size: 12;
 `;
 
 const MetaText = styled.Text`
@@ -129,12 +152,9 @@ const MetaText = styled.Text`
 
 const styles = StyleSheet.create({
   profileImage: {
-    marginTop: 8,
-    marginBottom: 8,
-    marginRight: 10,
+    position: 'absolute',
     borderRadius: 100,
-    width: 40,
-    height: 40,
-    backgroundColor: 'black',
+    width: '100%',
+    height: '100%',
   },
 });
