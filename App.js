@@ -1,7 +1,4 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
  * @format
  * @flow strict-local
  */
@@ -23,15 +20,16 @@ import {
   Image,
 } from 'react-native';
 import styled from 'styled-components/native';
-
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {faSpinner} from '@fortawesome/free-solid-svg-icons';
+import {RecoilRoot, useRecoilState} from 'recoil/native/recoil';
+
 import {http} from './utils/http';
 import {useStateCallback} from './utils/useStateCallback';
 import {Tab} from './components/layout/header';
 import {TrendContainer} from './components/trend/TrendList';
 import {TrendDetail} from './components/trend/TrendDetail';
 import {FontAwesomeSpin} from './utils/fontAweSome';
-import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 
 const Stack = createStackNavigator();
 
@@ -41,12 +39,14 @@ moment.locale('ko');
 
 const App: () => Node = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={Home} options={{title: 'Gae9', headerShown: false}}/>
-        <Stack.Screen name="TrendDetail" component={TrendDetail}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <RecoilRoot>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Home" component={Home} options={{title: 'Gae9', headerShown: false}}/>
+          <Stack.Screen name="TrendDetail" component={TrendDetail}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </RecoilRoot>
   );
 };
 
