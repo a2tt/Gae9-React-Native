@@ -19,6 +19,7 @@ import styled from 'styled-components/native';
 import {http} from '../../utils/http';
 import {TrendSiteContainer} from './TrendSite';
 import {TrendLikeContainer} from './TrendLike';
+import {CommentContainer} from '../comment/comment';
 
 export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;
@@ -103,6 +104,7 @@ const BelowImage: () => Node = ({trend, expression, setExpression}) => {
         setExpression={setExpression}
       />
       <TrendSiteContainer posts={trend.posts} />
+      <CommentContainer trendCid={trend.id}/>
     </View>
   );
 };
