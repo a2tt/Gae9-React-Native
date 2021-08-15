@@ -70,7 +70,7 @@ const Comment: () => Node = ({comment}) => {
   const time = moment(comment.created_at).utcOffset('+09:00', true);
 
   return (
-    <CommentView depth={comment.depth}>
+    <CommentView depth={comment.depth} my={comment.my}>
       <ProfileImageView>
         <FastImage
           style={[
@@ -115,7 +115,8 @@ const CommentHeaderView = styled.View`
 
 const CommentView = styled.View`
   flex-direction: row;
-  margin-left: ${props => (props.depth - 1) * 14};
+  padding-left: ${props => (props.depth - 1) * 14};
+  background-color: ${props => (props.my ? 'rgba(66,245,155,0.1)' : 'transparent')};
 `;
 
 const ProfileImageView = styled.View`
