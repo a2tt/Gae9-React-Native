@@ -1,7 +1,4 @@
-import React from 'react';
-import {
-  atom,
-} from 'recoil';
+import {atom} from 'recoil';
 
 export const commentWrittenState = atom({
   key: 'commentWritten',
