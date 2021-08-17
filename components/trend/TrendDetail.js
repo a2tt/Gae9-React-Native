@@ -80,7 +80,6 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
     );
   };
 
-  const memoizedValue = useCallback(renderItem, []); // FIXME image size 를 비동기로 가져오기 떄문에, 캐싱 문제가 발생
   const keyExtractor = useCallback(item => item, []);
 
   return (
