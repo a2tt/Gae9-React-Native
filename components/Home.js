@@ -18,7 +18,7 @@ import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 
 import {http} from '../utils/http';
 import {useStateCallback} from '../utils/useStateCallback';
-import {Tab} from './layout/header';
+import {Tab} from './layout/Header';
 import {TrendContainer} from './trend/TrendList';
 import {FontAwesomeSpin} from '../utils/fontAweSome';
 
