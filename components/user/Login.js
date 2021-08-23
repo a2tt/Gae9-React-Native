@@ -5,52 +5,43 @@ import {useRecoilState} from 'recoil/native/recoil';
 import {oauthProviderState, oauthTokenState} from '../../utils/state';
 
 export const LoginContainer: () => Node = ({route, navigation}) => {
-  const [oauthProvider, setOauthProvider] = useRecoilState(oauthProviderState);
-  const [oauthToken, setOauthToken] = useRecoilState(oauthTokenState);
+  const [oauthProvider] = useRecoilState(oauthProviderState);
+  const [oauthToken] = useRecoilState(oauthTokenState);
 
   useEffect(() => {
-    if (route.params && route.params.toastMsg) {
-      ToastAndroid.show(route.params.toastMsg, ToastAndroid.LONG);
+    if (oauthProvider && oauthToken) {
+      navigation.navigate('Home');
     }
-  }, [route.params]);
+  }, [oauthToken, oauthProvider]);
 
-  if (oauthProvider && oauthToken) {
-    return (
-      <LoginView>
-        <Text>{oauthProvider}</Text>
-        <Text>{oauthToken}</Text>
-      </LoginView>
-    )
-  } else {
-    return (
-      <LoginView>
-        <BtnTouchableOpacity
-          onPress={() =>
-            navigation.navigate('OAuthWebView', {provider: 'kakao'})
-          }>
-          <View>
-            <SocialText>KaKao</SocialText>
-          </View>
-        </BtnTouchableOpacity>
-        <BtnTouchableOpacity
-          onPress={() =>
-            navigation.navigate('OAuthWebView', {provider: 'naver'})
-          }>
-          <View>
-            <SocialText>Naver</SocialText>
-          </View>
-        </BtnTouchableOpacity>
-        <BtnTouchableOpacity
-          onPress={() =>
-            navigation.navigate('OAuthWebView', {provider: 'facebook'})
-          }>
-          <View>
-            <SocialText>Facebook</SocialText>
-          </View>
-        </BtnTouchableOpacity>
-      </LoginView>
-    );
-  }
+  return (
+    <LoginView>
+      <BtnTouchableOpacity
+        onPress={() =>
+          navigation.navigate('OAuthWebView', {provider: 'kakao'})
+        }>
+        <View>
+          <SocialText>KaKao</SocialText>
+        </View>
+      </BtnTouchableOpacity>
+      <BtnTouchableOpacity
+        onPress={() =>
+          navigation.navigate('OAuthWebView', {provider: 'naver'})
+        }>
+        <View>
+          <SocialText>Naver</SocialText>
+        </View>
+      </BtnTouchableOpacity>
+      <BtnTouchableOpacity
+        onPress={() =>
+          navigation.navigate('OAuthWebView', {provider: 'facebook'})
+        }>
+        <View>
+          <SocialText>Facebook</SocialText>
+        </View>
+      </BtnTouchableOpacity>
+    </LoginView>
+  );
 };
 
 const LoginView = styled.View`

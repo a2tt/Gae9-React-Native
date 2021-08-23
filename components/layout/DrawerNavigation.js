@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components/native';
-import {SafeAreaView, TouchableOpacity} from 'react-native';
+import {SafeAreaView, Text, ToastAndroid, TouchableOpacity} from 'react-native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -11,29 +11,70 @@ import {StackNavigator} from './StackNavigation';
 import {SettingContainer} from '../user/Setting';
 import {LoginContainer} from '../user/Login';
 import {OauthWebViewContainer} from '../user/OauthWebView';
+import {useRecoilState} from 'recoil/native/recoil';
+import {
+  oauthProviderState, oauthTokenState, toastMsgState,
+} from '../../utils/state';
+import {View} from 'react-native-reanimated';
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent: () => Node = (props) => {
+  const [oauthProvider, setOauthProvider] = useRecoilState(oauthProviderState);
+  const [oauthToken, setOauthToken] = useRecoilState(oauthTokenState);
+  const [, setToastMsg] = useRecoilState(toastMsgState);
+
+  const [logined, setLogined] = useState(false);
+
+  useEffect(() => {
+    if (oauthProvider && oauthToken) {
+      setLogined(true);
+    } else {
+      setLogined(false);
+    }
+  }, [oauthProvider, oauthToken]);
+
+  const doLogout = () => {
+    setOauthProvider('');
+    setOauthToken('');
+    setToastMsg('로그아웃 되었습니다.');
+    props.navigation.navigate('Home');
+  };
+
+  const drawerHeader = () => {
+    if (oauthProvider && oauthToken) {
+      return (
+        <DrawerToLoginView>
+          <Text>{oauthProvider}</Text>
+          <Text>{oauthToken}</Text>
+        </DrawerToLoginView>
+      );
+    } else {
+      return (
+        <DrawerToLoginView>
+          <DrawerToLoginText>
+            로그인을 하시면{'\n'}좀 더 다양한 기능을 사용할 수 있어요!
+          </DrawerToLoginText>
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate('Login');
+            }}>
+            <DrawerToLoginBtnView>
+              <DrawerToLoginBtnText>로그인하기</DrawerToLoginBtnText>
+            </DrawerToLoginBtnView>
+          </TouchableOpacity>
+        </DrawerToLoginView>
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <DrawerToLoginView>
-        <DrawerToLoginText>
-          로그인을 하시면{'\n'}좀 더 다양한 기능을 사용할 수 있어요!
-        </DrawerToLoginText>
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.navigate('Login');
-          }}>
-          <DrawerToLoginBtnView>
-            <DrawerToLoginBtnText>로그인하기</DrawerToLoginBtnText>
-          </DrawerToLoginBtnView>
-        </TouchableOpacity>
-      </DrawerToLoginView>
-
+      {drawerHeader()}
       <DrawerContentScrollView {...props}>
-        <DrawerItem label="test 1" onPress={() => console.log(1)}/>
-        <DrawerItem label="test 2" onPress={() => console.log(2)}/>
+        {logined && (
+          <DrawerItem label="로그아웃" onPress={() => doLogout()}/>
+        )}
         <DrawerItemList {...props}/>
       </DrawerContentScrollView>
     </SafeAreaView>
@@ -41,6 +82,15 @@ const CustomDrawerContent: () => Node = (props) => {
 };
 
 export const DrawerNavigator: () => Node = () => {
+  const [toastMsg, setToastMsg] = useRecoilState(toastMsgState);
+
+  useEffect(() => {
+    if (toastMsg) {
+      ToastAndroid.show(toastMsg, ToastAndroid.LONG);
+      setToastMsg('');
+    }
+  }, [toastMsg]);
+
   return (
     <Drawer.Navigator
       initialRouteName="Home"

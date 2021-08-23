@@ -1,6 +1,6 @@
 import React, {useRef} from 'react';
 import {WebView} from 'react-native-webview';
-import {oauthProviderState, oauthTokenState} from '../../utils/state';
+import {oauthProviderState, oauthTokenState, toastMsgState} from '../../utils/state';
 import {useRecoilState} from 'recoil/native/recoil';
 
 import {
@@ -32,15 +32,18 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
   let webviewRef = useRef();
   const [, setOauthProvider] = useRecoilState(oauthProviderState);
   const [, setOauthToken] = useRecoilState(oauthTokenState);
+  const [, setToastMsg] = useRecoilState(toastMsgState);
 
   const handleOnMessage = ({nativeEvent: {data}}) => {
     // webview 에서 window.ReactNativeWebView.postMessage 으로 보낸 데이터 핸들링
     let resp = JSON.parse(data);
     if (resp.meta.status !== 200) {
-      navigation.navigate('Login', {toastMsg: resp.meta.message});
+      setToastMsg(resp.meta.message);
+      navigation.navigate('Login');
     } else {
       setOauthProvider(route.params.provider);
       setOauthToken(resp.response.token);
+      setToastMsg('로그인 되었습니다.');
       navigation.navigate('Home');
     }
   };
