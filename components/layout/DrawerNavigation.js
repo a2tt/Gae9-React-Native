@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components/native';
 import {SafeAreaView, TouchableOpacity} from 'react-native';
 import {
   createDrawerNavigator,
@@ -9,18 +10,21 @@ import {
 import {StackNavigator} from './StackNavigation';
 import {SettingContainer} from '../user/Setting';
 import {LoginContainer} from '../user/Login';
-import styled from 'styled-components/native';
+import {OauthWebViewContainer} from '../user/OauthWebView';
 
 const Drawer = createDrawerNavigator();
 
-const CustomDrawerContent: () => Node = ({navigation, ...props}) => {
+const CustomDrawerContent: () => Node = (props) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <DrawerToLoginView>
         <DrawerToLoginText>
           로그인을 하시면{'\n'}좀 더 다양한 기능을 사용할 수 있어요!
         </DrawerToLoginText>
-        <TouchableOpacity onPress={() => {navigation.navigate('Login')}}>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate('Login');
+          }}>
           <DrawerToLoginBtnView>
             <DrawerToLoginBtnText>로그인하기</DrawerToLoginBtnText>
           </DrawerToLoginBtnView>
@@ -44,6 +48,7 @@ export const DrawerNavigator: () => Node = () => {
       <Drawer.Screen name="Home" component={StackNavigator} options={{drawerLabel: 'Home'}}/>
       <Drawer.Screen name="Setting" component={SettingContainer} options={{drawerLabel: 'Setting'}}/>
       <Drawer.Screen name="Login" component={LoginContainer} options={{drawerLabel: 'Login'}}/>
+      <Drawer.Screen name="OAuthWebView" component={OauthWebViewContainer} options={{drawerLabel: 'OAuthWebView'}}/>
     </Drawer.Navigator>
   );
 };
