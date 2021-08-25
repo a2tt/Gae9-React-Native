@@ -22,6 +22,7 @@ import TimeAgo from 'react-native-timeago';
 import {stringColor} from '../../utils/stringColor';
 import {commentWrittenState} from '../../utils/state';
 import {useRecoilState} from 'recoil/native/recoil';
+import {UserCircle} from '../user/UserCircle';
 
 let moment = require('moment');
 
@@ -74,17 +75,7 @@ export const Comment: () => Node = ({navigation, comment}) => {
 
   return (
     <CommentView depth={comment.depth} my={comment.my}>
-      <ProfileImageView>
-        <FastImage
-          style={[
-            styles.profileImage,
-            {
-              backgroundColor: '#' + stringColor(comment.username),
-            },
-          ]}
-        />
-        <ProfileImageText>{comment.username.slice(0, 5)}</ProfileImageText>
-      </ProfileImageView>
+      <UserCircle username={comment.username}/>
       <DataView>
         <UsernameText>{comment.username}</UsernameText>
         <Text>{comment.content}</Text>
@@ -127,21 +118,6 @@ const CommentView = styled.View`
   background-color: ${props => (props.my ? 'rgba(66,245,155,0.1)' : 'transparent')};
 `;
 
-const ProfileImageView = styled.View`
-  margin-top: 8;
-  margin-bottom: 8;
-  margin-right: 10;
-  width: 44;
-  height: 44;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ProfileImageText = styled.Text`
-  color: #fff;
-  height: 20;
-`;
 const DataView = styled.View`
   flex: 1;
   padding-top: 10;
@@ -170,10 +146,9 @@ const ReplyBtnText = styled.Text`
 `;
 
 const styles = StyleSheet.create({
-  profileImage: {
-    position: 'absolute',
-    borderRadius: 100,
-    width: '100%',
-    height: '100%',
+  timeAgo: {
+    color: '#bbb',
+    fontSize: 11,
+    marginRight: 20,
   },
 });

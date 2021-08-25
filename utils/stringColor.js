@@ -14,5 +14,9 @@ const intToRGB = i => {
 };
 
 export const stringColor = str => {
-  return intToRGB(hashCode(str));
+  if (!str) {
+    return '#000000';
+  } else {
+    return intToRGB(hashCode(str));
+  }
 };

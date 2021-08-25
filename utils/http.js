@@ -1,17 +1,35 @@
+import {ToastAndroid} from 'react-native';
+
 const axios = require('axios').default;
 import qs from 'qs';
 import constants from '../constants';
+import {oauthTokenState} from './state';
+import {promiseGetRecoil, promiseSetRecoil} from 'recoil-outside';
 
 const instance = axios.create();
 
 instance.interceptors.request.use(
-  function (config) {
-    // Do something before request is sent
+  async function (config) {
+    // const oauthToken = useRecoilValue(oauthTokenState);
+    const oauthToken = await promiseGetRecoil(oauthTokenState);
+    config.headers.Authorization = `Bearer ${oauthToken}`;
     return config;
   },
   function (error) {
     // Do something with request error
     return Promise.reject(error);
+  },
+);
+
+instance.interceptors.response.use(
+  function (res) {
+    if (res.data?.meta?.status >= 400) {
+      ToastAndroid.show(res.data?.meta.message, ToastAndroid.LONG);
+    }
+    return res;
+  },
+  function (e) {
+    return Promise.reject(e);
   },
 );
 
@@ -98,12 +116,8 @@ class Http {
       }));
   }
 
-  getProfile(uid) {
-    return instance.get(`${constants.API_URL}/users/profile`,
-      qs.stringify({
-        uid: uid,
-      }),
-    );
+  getProfile() {
+    return instance.get(`${constants.API_URL}/users/profile`);
   }
 
   updateProfile(user) {

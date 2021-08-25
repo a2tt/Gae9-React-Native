@@ -19,3 +19,20 @@ export const oauthTokenState = atom({
   key: 'oauthToken',
   default: '',
 });
+
+export const myState = atom({
+  key: 'myState',
+  default: {
+    user_id: null,
+  },
+});
+
+export const profileState = atom({
+  key: 'profile',
+  default: {
+    username: '',
+    id: '',
+    email: '',
+    auth_type: '',
+  },
+});

@@ -8,6 +8,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import type {Node} from 'react';
 import {RecoilRoot, useRecoilState} from 'recoil/native/recoil';
+import RecoilOutside from 'recoil-outside';
 
 import {DrawerNavigator} from './components/layout/DrawerNavigation';
 
@@ -18,6 +19,7 @@ moment.locale('ko');
 const App: () => Node = () => {
   return (
     <RecoilRoot>
+      <RecoilOutside/>
       <NavigationContainer>
         <DrawerNavigator/>
       </NavigationContainer>

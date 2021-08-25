@@ -1,13 +1,22 @@
-import React, {useRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {WebView} from 'react-native-webview';
-import {oauthProviderState, oauthTokenState, toastMsgState} from '../../utils/state';
+import {
+  oauthProviderState,
+  oauthTokenState,
+  toastMsgState,
+  myState,
+  profileState,
+} from '../../utils/state';
 import {useRecoilState} from 'recoil/native/recoil';
+import {http} from '../../utils/http';
+import {promiseGetRecoil, promiseSetRecoil} from 'recoil-outside';
 
 import {
   NAVER_CREDENTIAL,
   KAKAO_CREDENTIAL,
   FACEBOOK_CREDENTIAL,
 } from '../../constants';
+import {View} from 'react-native';
 
 const gae9ApiUri = 'https://gae9.com/api';
 const redirectUri = {
@@ -33,19 +42,53 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
   const [, setOauthProvider] = useRecoilState(oauthProviderState);
   const [, setOauthToken] = useRecoilState(oauthTokenState);
   const [, setToastMsg] = useRecoilState(toastMsgState);
+  const [, setMyState] = useRecoilState(myState);
+  const [, setProfile] = useRecoilState(profileState);
+  const [visible, setVisible] = useState(true);
+  const [targetUri, setTargetUri] = useState('');
 
-  const handleOnMessage = ({nativeEvent: {data}}) => {
-    // webview 에서 window.ReactNativeWebView.postMessage 으로 보낸 데이터 핸들링
+  useEffect(() => {
+    setTargetUri(redirectUri[route.params.provider]);
+    setVisible(true);
+  }, [route]);
+
+  /**
+   * webview 에서 window.ReactNativeWebView.postMessage 으로 보낸 데이터 핸들링
+   * @param data
+   */
+  const handleOnMessage = async ({nativeEvent: {data}}) => {
+    setVisible(false);
+
     let resp = JSON.parse(data);
     if (resp.meta.status !== 200) {
       setToastMsg(resp.meta.message);
       navigation.navigate('Login');
     } else {
       setOauthProvider(route.params.provider);
-      setOauthToken(resp.response.token);
+      // setOauthToken(resp.response.token);
+      console.log(resp.response);
+
+      // axios interceptor 에서 사용하기 위해 promiseSetRecoil 사용
+      await promiseSetRecoil(oauthTokenState, resp.response.token);
+      const v = await promiseGetRecoil(oauthTokenState);
+      console.log(v);
+      onLogin();
+
       setToastMsg('로그인 되었습니다.');
       navigation.navigate('Home');
     }
+  };
+
+  /**
+   * 내 정보 요청 후 저장
+   * @returns {Promise<void>}
+   */
+  const onLogin = async () => {
+    let res = await http.me();
+    setMyState(res.data.response.setting);
+
+    let res2 = await http.getProfile();
+    setProfile(res2.data.response.user);
   };
 
   const jsCode = `
@@ -54,19 +97,23 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
     try {
       let jsonResp = JSON.parse(document.documentElement.innerText);
       window.ReactNativeWebView.postMessage(document.documentElement.innerText);
-      window.close();
+      window.location.href="";
     } catch (e) {}
-  }, 1000)
+  }, 300)
   true;
 `;
 
   return (
-    <WebView
-      onMessage={handleOnMessage}
-      ref={_ref => (webviewRef = _ref)}
-      source={{uri: redirectUri[route.params.provider]}}
-      javaScriptEnable={true}
-      injectedJavaScript={jsCode}
-    />
+    <View>
+      {visible && (
+        <WebView
+          onMessage={handleOnMessage}
+          ref={_ref => (webviewRef = _ref)}
+          source={{uri: targetUri}}
+          javaScriptEnable={true}
+          injectedJavaScript={jsCode}
+        />
+      )}
+    </View>
   );
 };

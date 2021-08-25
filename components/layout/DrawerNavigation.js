@@ -11,13 +11,16 @@ import {StackNavigator} from './StackNavigation';
 import {SettingContainer} from '../user/Setting';
 import {LoginContainer} from '../user/Login';
 import {OauthWebViewContainer} from '../user/OauthWebView';
+import {LoginedHeader} from './DrawerHeader';
 import {useRecoilState} from 'recoil/native/recoil';
 import {
-  oauthProviderState, oauthTokenState, toastMsgState,
+  oauthProviderState,
+  oauthTokenState,
+  toastMsgState,
 } from '../../utils/state';
-import {View} from 'react-native-reanimated';
 
 const Drawer = createDrawerNavigator();
+
 
 const CustomDrawerContent: () => Node = (props) => {
   const [oauthProvider, setOauthProvider] = useRecoilState(oauthProviderState);
@@ -42,13 +45,8 @@ const CustomDrawerContent: () => Node = (props) => {
   };
 
   const drawerHeader = () => {
-    if (oauthProvider && oauthToken) {
-      return (
-        <DrawerToLoginView>
-          <Text>{oauthProvider}</Text>
-          <Text>{oauthToken}</Text>
-        </DrawerToLoginView>
-      );
+    if (logined) {
+      return <LoginedHeader oauthProvider={oauthProvider}/>;
     } else {
       return (
         <DrawerToLoginView>
@@ -68,14 +66,26 @@ const CustomDrawerContent: () => Node = (props) => {
     }
   };
 
+  const {state, ...restProps} = props;
+  const newState = {...state}; // copy
+  const LoginOnly = ['MyComment', 'MyScrap'];
+  let excludeItemNames = ['Login', 'OAuthWebView'];
+
+  if (!logined) {
+    excludeItemNames = excludeItemNames.concat(LoginOnly);
+  }
+  newState.routes = newState.routes.filter(
+    item => !excludeItemNames.includes(item.name),
+  );
+
   return (
     <SafeAreaView style={{flex: 1}}>
       {drawerHeader()}
       <DrawerContentScrollView {...props}>
+        <DrawerItemList state={newState} {...restProps}/>
         {logined && (
           <DrawerItem label="로그아웃" onPress={() => doLogout()}/>
         )}
-        <DrawerItemList {...props}/>
       </DrawerContentScrollView>
     </SafeAreaView>
   );
@@ -95,10 +105,12 @@ export const DrawerNavigator: () => Node = () => {
     <Drawer.Navigator
       initialRouteName="Home"
       drawerContent={_props => <CustomDrawerContent {..._props} />}>
-      <Drawer.Screen name="Home" component={StackNavigator} options={{drawerLabel: 'Home'}}/>
-      <Drawer.Screen name="Setting" component={SettingContainer} options={{drawerLabel: 'Setting'}}/>
-      <Drawer.Screen name="Login" component={LoginContainer} options={{drawerLabel: 'Login'}}/>
-      <Drawer.Screen name="OAuthWebView" component={OauthWebViewContainer} options={{drawerLabel: 'OAuthWebView'}}/>
+      <Drawer.Screen name="Home" component={StackNavigator} options={{drawerLabel: '홈'}}/>
+      <Drawer.Screen name="MyComment" component={SettingContainer} options={{drawerLabel: '내가 작성한 댓글'}}/>
+      <Drawer.Screen name="MyScrap" component={SettingContainer} options={{drawerLabel: '내가 스크랩한 글'}}/>
+      <Drawer.Screen name="Setting" component={SettingContainer} options={{drawerLabel: '앱 설정'}}/>
+      <Drawer.Screen name="Login" component={LoginContainer} options={{drawerLabel: ''}}/>
+      <Drawer.Screen name="OAuthWebView" component={OauthWebViewContainer} options={{drawerLabel: ''}}/>
     </Drawer.Navigator>
   );
 };
