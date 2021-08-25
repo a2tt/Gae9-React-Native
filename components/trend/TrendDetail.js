@@ -112,7 +112,7 @@ const BelowImage: () => Node = ({route, navigation, trend}) => {
     <View>
       <TrendLikeContainer/>
       <TrendSiteContainer posts={trend.posts}/>
-      <CommentContainer route={route} navigation={navigation} trendCid={trend.id}/>
+      <CommentContainer route={route} navigation={navigation}/>
     </View>
   );
 };

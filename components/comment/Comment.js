@@ -20,26 +20,28 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faComments} from '@fortawesome/free-solid-svg-icons';
 import TimeAgo from 'react-native-timeago';
 import {stringColor} from '../../utils/stringColor';
-import {commentWrittenState, toastMsgState} from '../../utils/state';
-import {useRecoilState} from 'recoil/native/recoil';
+import {
+  commentWrittenState,
+  toastMsgState,
+  trendState,
+} from '../../utils/state';
+import {useRecoilState, useRecoilValue} from 'recoil/native/recoil';
 import {UserCircle} from '../user/UserCircle';
 import {faExclamationCircle} from '@fortawesome/free-solid-svg-icons';
 
 let moment = require('moment');
 
-export const CommentContainer: () => Node = ({route, navigation, trendCid}) => {
+export const CommentContainer: () => Node = ({route, navigation}) => {
   const [commentWritten] = useRecoilState(commentWrittenState);
   const [loaded, setLoaded] = useState(false);
   const [comments, setComments] = useState([]);
+  const trend = useRecoilValue(trendState);
 
   useEffect(() => {
-    if (!trendCid) {
-      return;
-    }
-    http.getComments(trendCid).then(res => {
+    http.getComments(trend.id).then(res => {
       setComments(res.data.response.comments);
     });
-  }, [trendCid, commentWritten]);
+  }, [trend, commentWritten]);
 
   useEffect(() => {
     setLoaded(true);
@@ -127,6 +129,7 @@ const CommentContainerView = styled.View`
   background-color: white;
   padding-left: 10;
   padding-right: 10;
+  padding-bottom: 20;
 `;
 
 const CommentHeaderView = styled.View`
