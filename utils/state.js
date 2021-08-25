@@ -10,6 +10,36 @@ export const commentWrittenState = atom({
   default: 0, // written timestamp
 });
 
+export const trendState = atom({
+  key: 'trendState',
+  default: {
+    id: '', // cid
+    title: '',
+    trend_num: 0,
+    view_cnt: 0,
+    sites: [],
+    posts: [],
+    scraped: false,
+    images: [],
+  },
+});
+
+export const trendLikeState = atom({
+  key: 'trendlikeState',
+  default: {
+    good_cnt: 0,
+    bad_cnt: 0,
+  },
+});
+
+export const myTrendLikeState = atom({
+  key: 'myTrendlikeState',
+  default: {
+    good_cnt: 0,
+    bad_cnt: 0,
+  },
+});
+
 export const oauthProviderState = atom({
   key: 'oauthProvider',
   default: '',

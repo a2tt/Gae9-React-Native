@@ -14,6 +14,8 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
+import {myTrendLikeState, trendLikeState, trendState} from '../../utils/state';
+import {useRecoilState} from 'recoil/native/recoil';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
@@ -24,17 +26,18 @@ import {CommentWrite} from '../comment/CommentWrite';
 
 export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;
-  const [trend, setTrend] = useState({posts: []});
+  const [trend, setTrend] = useRecoilState(trendState);
   const [imageSize, setImageSize] = useState({});
-  const [myTrendAction, setMyTrendAction] = useState({good_cnt: 0, bad_cnt: 0});
-  const [expression, setExpression] = useState({good_cnt: 0, bad_cnd: 0});
+  const [myTrendLike, setMyTrendLike] = useRecoilState(myTrendLikeState);
+  const [trendLike, setTrendLike] = useRecoilState(trendLikeState);
 
   useEffect(() => {
     // 첫 렌더링 시, 트렌드 데이터를 가져온다.
     console.log('===============================');
     http.getTrend(trendCid).then(res => {
-      setMyTrendAction(res.data.response.my_trend_action);
+      setMyTrendLike(res.data.response.my_trend_action);
       let _trend = res.data.response.trend;
+      setTrendLike(_trend.trend_data.expression);
 
       // width, height 값을 정확히 할아야 제대로 보여줄 수 있으므로, 이미지 사이즈 먼저 확인한다.
       Promise.all(_trend.images.map(imageUrl => getImageSize(imageUrl))).then(
@@ -44,14 +47,13 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
             _imageSize[imageUrl] = values[idx];
           });
           setImageSize(_imageSize);
-          setExpression(_trend.trend_data.expression);
           setTrend(_trend);
         },
       );
 
       navigation.setOptions({title: res.data.response.trend.title}); // navigation header title
     });
-  }, []);
+  }, [route]);
 
   const getImageSize = uri =>
     new Promise(resolve => {
@@ -95,8 +97,7 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
                 route={route}
                 navigation={navigation}
                 trend={trend}
-                expression={expression}
-                setExpression={setExpression}/>
+              />
             )}
           />
         )}
@@ -106,13 +107,10 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
   );
 };
 
-const BelowImage: () => Node = ({route, navigation, trend, expression, setExpression}) => {
+const BelowImage: () => Node = ({route, navigation, trend}) => {
   return (
     <View>
-      <TrendLikeContainer
-        expression={expression}
-        setExpression={setExpression}
-      />
+      <TrendLikeContainer/>
       <TrendSiteContainer posts={trend.posts}/>
       <CommentContainer route={route} navigation={navigation} trendCid={trend.id}/>
     </View>
