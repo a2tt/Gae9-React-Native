@@ -12,6 +12,8 @@ import {SettingContainer} from '../user/Setting';
 import {LoginContainer} from '../user/Login';
 import {OauthWebViewContainer} from '../user/OauthWebView';
 import {LoginedHeader} from './DrawerHeader';
+import {MyComment} from '../user/MyComments';
+import {TrendDetail} from '../trend/TrendDetail';
 import {useRecoilState} from 'recoil/native/recoil';
 import {
   oauthProviderState,
@@ -69,7 +71,7 @@ const CustomDrawerContent: () => Node = (props) => {
   const {state, ...restProps} = props;
   const newState = {...state}; // copy
   const LoginOnly = ['MyComment', 'MyScrap'];
-  let excludeItemNames = ['Login', 'OAuthWebView'];
+  let excludeItemNames = ['Login', 'OAuthWebView', 'TrendDetail'];
 
   if (!logined) {
     excludeItemNames = excludeItemNames.concat(LoginOnly);
@@ -106,11 +108,12 @@ export const DrawerNavigator: () => Node = () => {
       initialRouteName="Home"
       drawerContent={_props => <CustomDrawerContent {..._props} />}>
       <Drawer.Screen name="Home" component={StackNavigator} options={{drawerLabel: '홈'}}/>
-      <Drawer.Screen name="MyComment" component={SettingContainer} options={{drawerLabel: '내가 작성한 댓글'}}/>
+      <Drawer.Screen name="MyComment" component={MyComment} options={{drawerLabel: '내가 작성한 댓글'}}/>
       <Drawer.Screen name="MyScrap" component={SettingContainer} options={{drawerLabel: '내가 스크랩한 글'}}/>
       <Drawer.Screen name="Setting" component={SettingContainer} options={{drawerLabel: '앱 설정'}}/>
       <Drawer.Screen name="Login" component={LoginContainer} options={{drawerLabel: ''}}/>
       <Drawer.Screen name="OAuthWebView" component={OauthWebViewContainer} options={{drawerLabel: ''}}/>
+      <Drawer.Screen name="TrendDetail" component={TrendDetail} options={{drawerLabel: ''}}/>
     </Drawer.Navigator>
   );
 };

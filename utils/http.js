@@ -150,6 +150,15 @@ class Http {
     );
   }
 
+  userComments(page = 1, n = 30) {
+    return instance.get(`${constants.API_URL}/users/comments`, {
+      params: {
+        page,
+        n,
+      },
+    });
+  }
+
   me() {
     return instance.get(`${constants.API_URL}/me`);
   }
