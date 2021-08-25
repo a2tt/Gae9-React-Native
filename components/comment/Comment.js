@@ -20,9 +20,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faComments} from '@fortawesome/free-solid-svg-icons';
 import TimeAgo from 'react-native-timeago';
 import {stringColor} from '../../utils/stringColor';
-import {commentWrittenState} from '../../utils/state';
+import {commentWrittenState, toastMsgState} from '../../utils/state';
 import {useRecoilState} from 'recoil/native/recoil';
 import {UserCircle} from '../user/UserCircle';
+import {faExclamationCircle} from '@fortawesome/free-solid-svg-icons';
 
 let moment = require('moment');
 
@@ -72,12 +73,30 @@ export const CommentContainer: () => Node = ({route, navigation, trendCid}) => {
 
 export const Comment: () => Node = ({navigation, comment}) => {
   const time = moment(comment.created_at);
+  const [, setToastMsg] = useRecoilState(toastMsgState);
+
+  const declareComment = commentId => {
+    http.reportComment(commentId).then(res => {
+      console.log(res)
+      setToastMsg('신고가 접수되었습니다,');
+    });
+  };
 
   return (
     <CommentView depth={comment.depth} my={comment.my}>
       <UserCircle username={comment.username}/>
       <DataView>
-        <UsernameText>{comment.username}</UsernameText>
+        <View style={{flexDirection: 'row'}}>
+          <UsernameText>{comment.username}</UsernameText>
+          <DeclareTouchableOpacity onPress={() => declareComment(comment.id)}>
+            <FontAwesomeIcon
+              icon={faExclamationCircle}
+              size={10}
+              style={{marginTop: 3, color: '#aaa'}}
+            />
+            <DeclareText> 신고</DeclareText>
+          </DeclareTouchableOpacity>
+        </View>
         <Text>{comment.content}</Text>
         <MetaView>
           <TimeAgoText>
@@ -93,6 +112,15 @@ export const Comment: () => Node = ({navigation, comment}) => {
     </CommentView>
   );
 };
+
+const DeclareTouchableOpacity = styled.TouchableOpacity`
+  flex-direction: row;
+  margin-left: auto;
+`;
+const DeclareText = styled.Text`
+  color: #aaa;
+  font-size: 12;
+`;
 
 const CommentContainerView = styled.View`
   padding-top: 30;
