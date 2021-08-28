@@ -15,7 +15,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {myTrendLikeState, trendLikeState, trendState} from '../../utils/state';
-import {useRecoilState} from 'recoil/native/recoil';
+import {useRecoilState, useRecoilValue} from 'recoil/native/recoil';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
@@ -23,6 +23,44 @@ import {TrendSiteContainer} from './TrendSite';
 import {TrendLikeContainer} from './TrendLike';
 import {CommentContainer} from '../comment/Comment';
 import {CommentWrite} from '../comment/CommentWrite';
+import {faStar as faStarEmpty} from '@fortawesome/free-regular-svg-icons';
+import {faStar} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+
+export const TrendDetailNavHeader: () => Node = props => {
+  const trend = useRecoilValue(trendState);
+  const [scraped, setScraped] = useState(trend.scraped);
+
+  useEffect(() => {
+    setScraped(trend.scraped);
+  }, [trend]);
+
+  const toggleScrap = () => {
+    http
+      .trendScrap(trend.trend_num, scraped)
+      .then(res => {
+        if (res.status === 200) {
+          setScraped(!scraped);
+        }
+      }).catch(e => {
+      console.error(e);
+    });
+  };
+
+  return (
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <Text numberOfLines={1} style={{fontSize: 16}}>{props.children}</Text>
+      <TouchableOpacity
+        style={{marginLeft: 'auto', padding: 4}}
+        onPress={() => toggleScrap()}
+      >
+        {scraped
+          ? (<FontAwesomeIcon icon={faStar}/>)
+          : (<FontAwesomeIcon icon={faStarEmpty}/>)}
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;

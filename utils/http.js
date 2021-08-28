@@ -163,6 +163,15 @@ class Http {
     return instance.get(`${constants.API_URL}/users/scrap`);
   }
 
+  trendScrap(trendId, isDelete = false) {
+    const url = `${constants.API_URL}/trend/${trendId}/scrap`;
+    if (!isDelete) {
+      return instance.post(url);
+    } else {
+      return instance.delete(url);
+    }
+  }
+
   me() {
     return instance.get(`${constants.API_URL}/me`);
   }
