@@ -1,4 +1,10 @@
 import {atom} from 'recoil';
+import {AsyncStorage} from 'react-native';
+import {recoilPersist} from './recoilPersist';
+
+const {persistAtom} = recoilPersist({
+  storage: AsyncStorage,
+});
 
 export const toastMsgState = atom({
   key: 'toastMsg',
@@ -43,11 +49,13 @@ export const myTrendLikeState = atom({
 export const oauthProviderState = atom({
   key: 'oauthProvider',
   default: '',
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const oauthTokenState = atom({
   key: 'oauthToken',
   default: '',
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const myState = atom({

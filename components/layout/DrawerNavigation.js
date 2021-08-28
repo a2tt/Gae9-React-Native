@@ -8,26 +8,29 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import {StackNavigator} from './StackNavigation';
-import {SettingContainer} from '../user/Setting';
 import {LoginContainer} from '../user/Login';
 import {OauthWebViewContainer} from '../user/OauthWebView';
 import {LoginedHeader} from './DrawerHeader';
 import {MyComment} from '../user/MyComments';
 import {TrendDetail} from '../trend/TrendDetail';
-import {useRecoilState} from 'recoil/native/recoil';
+import {useRecoilState, useRecoilValue} from 'recoil/native/recoil';
 import {
   oauthProviderState,
   oauthTokenState,
   toastMsgState,
+  myState,
+  profileState,
 } from '../../utils/state';
 import {MyScrap} from '../user/MyScrap';
+import {http} from '../../utils/http';
 
 const Drawer = createDrawerNavigator();
-
 
 const CustomDrawerContent: () => Node = (props) => {
   const [oauthProvider, setOauthProvider] = useRecoilState(oauthProviderState);
   const [oauthToken, setOauthToken] = useRecoilState(oauthTokenState);
+  const [, setMy] = useRecoilState(myState);
+  const [, setProfie] = useRecoilState(profileState);
   const [, setToastMsg] = useRecoilState(toastMsgState);
 
   const [logined, setLogined] = useState(false);
@@ -40,9 +43,11 @@ const CustomDrawerContent: () => Node = (props) => {
     }
   }, [oauthProvider, oauthToken]);
 
-  const doLogout = () => {
+  const doLogout = async () => {
     setOauthProvider('');
     setOauthToken('');
+    setMy('');
+    setProfie('');
     setToastMsg('로그아웃 되었습니다.');
     props.navigation.navigate('Home');
   };
@@ -96,6 +101,21 @@ const CustomDrawerContent: () => Node = (props) => {
 
 export const DrawerNavigator: () => Node = () => {
   const [toastMsg, setToastMsg] = useRecoilState(toastMsgState);
+  const [oauthToken] = useRecoilValue(oauthTokenState);
+  const [, setMyState] = useRecoilState(myState);
+  const [, setProfile] = useRecoilState(profileState);
+
+  useEffect(() => {
+    getUserInfo()
+  }, [oauthToken]);
+
+  const getUserInfo = async () => {
+    let res = await http.me();
+    setMyState(res.data.response.setting);
+
+    let res2 = await http.getProfile();
+    setProfile(res2.data.response.user);
+  };
 
   useEffect(() => {
     if (toastMsg) {
@@ -111,7 +131,6 @@ export const DrawerNavigator: () => Node = () => {
       <Drawer.Screen name="Home" component={StackNavigator} options={{drawerLabel: '홈'}}/>
       <Drawer.Screen name="MyComment" component={MyComment} options={{drawerLabel: '내가 작성한 댓글'}}/>
       <Drawer.Screen name="MyScrap" component={MyScrap} options={{drawerLabel: '내가 스크랩한 글'}}/>
-      <Drawer.Screen name="Setting" component={SettingContainer} options={{drawerLabel: '앱 설정'}}/>
       <Drawer.Screen name="Login" component={LoginContainer} options={{drawerLabel: ''}}/>
       <Drawer.Screen name="OAuthWebView" component={OauthWebViewContainer} options={{drawerLabel: ''}}/>
       <Drawer.Screen name="TrendDetail" component={TrendDetail} options={{drawerLabel: ''}}/>

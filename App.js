@@ -5,9 +5,9 @@
 
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import type {Node} from 'react';
-import {RecoilRoot, useRecoilState} from 'recoil/native/recoil';
+import {RecoilRoot} from 'recoil/native/recoil';
 import RecoilOutside from 'recoil-outside';
 
 import {DrawerNavigator} from './components/layout/DrawerNavigation';

@@ -68,8 +68,7 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
 
       // axios interceptor 에서 사용하기 위해 promiseSetRecoil 사용
       await promiseSetRecoil(oauthTokenState, resp.response.token);
-      const v = await promiseGetRecoil(oauthTokenState);
-      console.log(v);
+      await promiseGetRecoil(oauthTokenState);
       onLogin();
 
       setToastMsg('로그인 되었습니다.');
