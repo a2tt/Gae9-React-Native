@@ -102,11 +102,14 @@ const CustomDrawerContent: () => Node = (props) => {
 export const DrawerNavigator: () => Node = () => {
   const [toastMsg, setToastMsg] = useRecoilState(toastMsgState);
   const [oauthToken] = useRecoilValue(oauthTokenState);
+  const [oauthProvider] = useRecoilValue(oauthProviderState);
   const [, setMyState] = useRecoilState(myState);
   const [, setProfile] = useRecoilState(profileState);
 
   useEffect(() => {
-    getUserInfo()
+    if (oauthToken && oauthProvider) {
+      getUserInfo();
+    }
   }, [oauthToken]);
 
   const getUserInfo = async () => {
@@ -127,8 +130,7 @@ export const DrawerNavigator: () => Node = () => {
   return (
     <Drawer.Navigator
       initialRouteName="Home"
-      drawerContent={_props => <CustomDrawerContent {..._props} />}
-      backBehavior="initialRoute">
+      drawerContent={_props => <CustomDrawerContent {..._props} />}>
       <Drawer.Screen name="Home" component={StackNavigator} options={{drawerLabel: '홈'}}/>
       <Drawer.Screen name="MyComment" component={MyComment} options={{drawerLabel: '내가 작성한 댓글'}}/>
       <Drawer.Screen name="MyScrap" component={MyScrap} options={{drawerLabel: '내가 스크랩한 글'}}/>

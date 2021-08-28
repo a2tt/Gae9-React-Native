@@ -58,6 +58,9 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
    */
   const handleOnMessage = async ({nativeEvent: {data}}) => {
     setVisible(false);
+    setTimeout(() => {
+      setVisible(true);
+    }, 1000);
 
     let resp = JSON.parse(data);
     if (resp.meta.status !== 200) {
@@ -72,7 +75,10 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
       onLogin();
 
       setToastMsg('로그인 되었습니다.');
-      navigation.navigate('Home');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Home'}],
+      });
     }
   };
 
