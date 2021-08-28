@@ -159,6 +159,10 @@ class Http {
     });
   }
 
+  userScraps() {
+    return instance.get(`${constants.API_URL}/users/scrap`);
+  }
+
   me() {
     return instance.get(`${constants.API_URL}/me`);
   }

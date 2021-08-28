@@ -20,6 +20,7 @@ import {
   oauthTokenState,
   toastMsgState,
 } from '../../utils/state';
+import {MyScrap} from '../user/MyScrap';
 
 const Drawer = createDrawerNavigator();
 
@@ -109,7 +110,7 @@ export const DrawerNavigator: () => Node = () => {
       drawerContent={_props => <CustomDrawerContent {..._props} />}>
       <Drawer.Screen name="Home" component={StackNavigator} options={{drawerLabel: '홈'}}/>
       <Drawer.Screen name="MyComment" component={MyComment} options={{drawerLabel: '내가 작성한 댓글'}}/>
-      <Drawer.Screen name="MyScrap" component={SettingContainer} options={{drawerLabel: '내가 스크랩한 글'}}/>
+      <Drawer.Screen name="MyScrap" component={MyScrap} options={{drawerLabel: '내가 스크랩한 글'}}/>
       <Drawer.Screen name="Setting" component={SettingContainer} options={{drawerLabel: '앱 설정'}}/>
       <Drawer.Screen name="Login" component={LoginContainer} options={{drawerLabel: ''}}/>
       <Drawer.Screen name="OAuthWebView" component={OauthWebViewContainer} options={{drawerLabel: ''}}/>
