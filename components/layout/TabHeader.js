@@ -1,13 +1,27 @@
 import type {Node} from 'react';
 import {StyleSheet, Text} from 'react-native';
 import React from 'react';
+import styled from 'styled-components/native/dist/styled-components.native.esm';
+import {useRecoilState} from 'recoil/native/recoil';
+import {currTabState} from '../../utils/atom';
 
-export const Tab: () => Node = props => {
+export const TabWrapper: () => Node = ({tabs}) => {
+  return (
+    <TabWrapperView>
+      {tabs.map((tab, idx) => {
+        return <Tab idx={idx} tab={tab} tabs={tabs}/>;
+      })}
+    </TabWrapperView>
+  );
+};
+
+const Tab: () => Node = props => {
+  const [currTab, setCurrTab] = useRecoilState(currTabState);
+
   let idx = props.idx;
   let tab = props.tab;
-  let currTab = props.currTab;
-  let setCurrTab = props.setCurrTab;
   let tabs = props.tabs;
+
   return (
     <Text
       style={[
@@ -19,13 +33,25 @@ export const Tab: () => Node = props => {
           ? styles.headerLastTab
           : '',
       ]}
-      key={tab.name}
       onPress={e => setCurrTab(tab.name)}>
       {tab.krName}
     </Text>
   );
 };
 
+const TabWrapperView = styled.View`
+  flex-direction: row;
+  margin-top: 10;
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 10;
+  width: 300;
+  background-color: #efefef;
+  border-width: 1;
+  border-color: #305060;
+  border-radius: 10;
+  text-align: center;
+`;
 
 const styles = StyleSheet.create({
   headerActiveTab: {

@@ -9,7 +9,11 @@ const Stack = createStackNavigator();
 export const StackNavigator: () => Node = ({navigation}) => {
   return (
     <Stack.Navigator initialRouteName="Home">
-      <Stack.Screen name="Home" component={Home} options={{title: 'Gae9', headerShown: false}}/>
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{title: 'Gae9', headerShown: false}}
+      />
       <Stack.Screen
         name="TrendDetail"
         component={TrendDetail}
