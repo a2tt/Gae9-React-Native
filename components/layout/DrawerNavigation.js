@@ -26,6 +26,30 @@ import {http} from '../../utils/http';
 
 const Drawer = createDrawerNavigator();
 
+const CustomDrawerHeader: () => Node = ({loggedIn, navigation}) => {
+  const [oauthProvider] = useRecoilValue(oauthProviderState);
+
+  if (loggedIn) {
+    return <LoginedHeader oauthProvider={oauthProvider}/>;
+  } else {
+    return (
+      <DrawerToLoginView>
+        <DrawerToLoginText>
+          로그인을 하시면{'\n'}좀 더 다양한 기능을 사용할 수 있어요!
+        </DrawerToLoginText>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Login');
+          }}>
+          <DrawerToLoginBtnView>
+            <DrawerToLoginBtnText>로그인하기</DrawerToLoginBtnText>
+          </DrawerToLoginBtnView>
+        </TouchableOpacity>
+      </DrawerToLoginView>
+    );
+  }
+};
+
 const CustomDrawerContent: () => Node = (props) => {
   const [oauthProvider, setOauthProvider] = useRecoilState(oauthProviderState);
   const [oauthToken, setOauthToken] = useRecoilState(oauthTokenState);
@@ -33,13 +57,13 @@ const CustomDrawerContent: () => Node = (props) => {
   const [, setProfie] = useRecoilState(profileState);
   const [, setToastMsg] = useRecoilState(toastMsgState);
 
-  const [logined, setLogined] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     if (oauthProvider && oauthToken) {
-      setLogined(true);
+      setLoggedIn(true);
     } else {
-      setLogined(false);
+      setLoggedIn(false);
     }
   }, [oauthProvider, oauthToken]);
 
@@ -52,34 +76,12 @@ const CustomDrawerContent: () => Node = (props) => {
     props.navigation.navigate('Home');
   };
 
-  const drawerHeader = () => {
-    if (logined) {
-      return <LoginedHeader oauthProvider={oauthProvider}/>;
-    } else {
-      return (
-        <DrawerToLoginView>
-          <DrawerToLoginText>
-            로그인을 하시면{'\n'}좀 더 다양한 기능을 사용할 수 있어요!
-          </DrawerToLoginText>
-          <TouchableOpacity
-            onPress={() => {
-              props.navigation.navigate('Login');
-            }}>
-            <DrawerToLoginBtnView>
-              <DrawerToLoginBtnText>로그인하기</DrawerToLoginBtnText>
-            </DrawerToLoginBtnView>
-          </TouchableOpacity>
-        </DrawerToLoginView>
-      );
-    }
-  };
-
   const {state, ...restProps} = props;
   const newState = {...state}; // copy
   const LoginOnly = ['MyComment', 'MyScrap'];
   let excludeItemNames = ['Login', 'OAuthWebView', 'TrendDetail'];
 
-  if (!logined) {
+  if (!loggedIn) {
     excludeItemNames = excludeItemNames.concat(LoginOnly);
   }
   newState.routes = newState.routes.filter(
@@ -88,12 +90,10 @@ const CustomDrawerContent: () => Node = (props) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      {drawerHeader()}
+      <CustomDrawerHeader loggedIn={loggedIn} navigation={props.navigation}/>
       <DrawerContentScrollView {...props}>
         <DrawerItemList state={newState} {...restProps}/>
-        {logined && (
-          <DrawerItem label="로그아웃" onPress={() => doLogout()}/>
-        )}
+        {loggedIn && <DrawerItem label="로그아웃" onPress={() => doLogout()}/>}
       </DrawerContentScrollView>
     </SafeAreaView>
   );
