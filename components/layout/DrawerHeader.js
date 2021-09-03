@@ -1,8 +1,8 @@
 import {useRecoilState} from 'recoil/native/recoil';
-import {myState, profileState} from '../../utils/state';
+import {myState, profileState} from '../../utils/atom';
 import React, {useEffect} from 'react';
 import {UserCircle} from '../user/UserCircle';
-import {intComma} from '../../utils/etc';
+import {intComma} from '../../utils/intComma';
 import styled from 'styled-components';
 
 export const LoginedHeader: () => Node = props => {

@@ -24,7 +24,7 @@ import {
   commentWrittenState,
   toastMsgState,
   trendState,
-} from '../../utils/state';
+} from '../../utils/atom';
 import {useRecoilState, useRecoilValue} from 'recoil/native/recoil';
 import {UserCircle} from '../user/UserCircle';
 import {faExclamationCircle} from '@fortawesome/free-solid-svg-icons';

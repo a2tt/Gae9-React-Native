@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {useRecoilState} from 'recoil/native/recoil';
-import {currTabState} from '../../utils/state';
+import {currTabState} from '../../utils/atom';
 import {http} from '../../utils/http';
 
 const TrendList: () => Node = props => {

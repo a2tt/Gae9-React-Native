@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {Text, View, ToastAndroid} from 'react-native';
 import styled from 'styled-components/native';
 import {useRecoilState} from 'recoil/native/recoil';
-import {oauthProviderState, oauthTokenState} from '../../utils/state';
+import {oauthProviderState, oauthTokenState} from '../../utils/atom';
 
 export const LoginContainer: () => Node = ({route, navigation}) => {
   const [oauthProvider] = useRecoilState(oauthProviderState);

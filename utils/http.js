@@ -3,7 +3,7 @@ import {ToastAndroid} from 'react-native';
 const axios = require('axios').default;
 import qs from 'qs';
 import constants from '../constants';
-import {oauthTokenState} from './state';
+import {oauthTokenState} from './atom';
 import {promiseGetRecoil, promiseSetRecoil} from 'recoil-outside';
 
 const instance = axios.create();

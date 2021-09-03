@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
 import {useRecoilState, useRecoilValue} from 'recoil/native/recoil';
-import {myTrendLikeState, trendLikeState, trendState} from '../../utils/state';
+import {myTrendLikeState, trendLikeState, trendState} from '../../utils/atom';
 
 const LikeItem: () => Node = ({type}) => {
   const trend = useRecoilValue(trendState);

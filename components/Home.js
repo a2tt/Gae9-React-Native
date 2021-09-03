@@ -19,9 +19,9 @@ import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 import {http} from '../utils/http';
 import {Tab} from './layout/Header';
 import {TrendContainer} from './trend/TrendList';
-import {FontAwesomeSpin} from '../utils/fontAweSome';
+import {FontAwesomeSpin} from '../utils/fontAwesomeSpin';
 import {useRecoilState} from 'recoil/native/recoil';
-import {currTabState} from '../utils/state';
+import {currTabState} from '../utils/atom';
 
 export const Home: () => Node = props => {
   const isDarkMode = useColorScheme() === 'dark';

@@ -11,7 +11,7 @@ import styled from 'styled-components/native';
 import {http} from '../../utils/http';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {commentWrittenState} from '../../utils/state';
+import {commentWrittenState} from '../../utils/atom';
 import {useRecoilState} from 'recoil/native/recoil';
 import {Comment} from './Comment';
 

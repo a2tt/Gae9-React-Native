@@ -20,7 +20,7 @@ import {
   toastMsgState,
   myState,
   profileState,
-} from '../../utils/state';
+} from '../../utils/atom';
 import {MyScrap} from '../user/MyScrap';
 import {http} from '../../utils/http';
 

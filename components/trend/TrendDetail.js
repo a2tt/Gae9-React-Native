@@ -14,7 +14,7 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
-import {myTrendLikeState, trendLikeState, trendState} from '../../utils/state';
+import {myTrendLikeState, trendLikeState, trendState} from '../../utils/atom';
 import {useRecoilState, useRecoilValue} from 'recoil/native/recoil';
 import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/native';

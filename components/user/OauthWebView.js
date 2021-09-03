@@ -6,7 +6,7 @@ import {
   toastMsgState,
   myState,
   profileState,
-} from '../../utils/state';
+} from '../../utils/atom';
 import {useRecoilState} from 'recoil/native/recoil';
 import {http} from '../../utils/http';
 import {promiseGetRecoil, promiseSetRecoil} from 'recoil-outside';
