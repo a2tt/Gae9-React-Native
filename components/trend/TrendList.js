@@ -1,9 +1,12 @@
-import React, {useCallback} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import type {Node} from 'react';
 import {TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {useRecoilState} from 'recoil/native/recoil';
+import {currTabState} from '../../utils/state';
+import {http} from '../../utils/http';
 
 const TrendList: () => Node = props => {
   return (
@@ -34,23 +37,112 @@ const TrendList: () => Node = props => {
   );
 };
 
-export const TrendContainer: () => Node = props => {
+export const TrendContainer: () => Node = ({navigation, tabName, infinite}) => {
+  const [trends, setTrends] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [maxId, setMaxId] = useState(0);
+  const [needLoading, setNeedLoading] = useState(true);
+
+  useEffect(() => {
+    if (needLoading === true) {
+      loadTrends();
+      setNeedLoading(false);
+    }
+  }, [needLoading]);
+
+  const handleRefresh = () => {
+    setTrends([]);
+    setMaxId(0);
+    setNeedLoading(true);
+  };
+
+  const loadTrends = () => {
+    /* 게시글 로딩 */
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+    if (tabName === 'nsfw') {
+      http
+        .getNsfwTrends()
+        .then(res => {
+          let _trends = res.data.trends.map(item => {
+            item.site_description = item.sites.map(it => it.title).join(', ');
+            return item;
+          });
+
+          _trends.forEach(item => {
+            console.log(item.title);
+          });
+
+          setTrends(prev => {
+            if (prev.length >= 0) {
+              return prev.concat(_trends);
+            } else {
+              return _trends;
+            }
+          });
+        })
+        .catch(e => {
+          console.error(e);
+        })
+        .finally(e => {
+          setLoading(false);
+        });
+    } else {
+      (tabName === 'hot' ? http.getHottestTrends() : http.getTrends(maxId))
+        .then(res => {
+          let _trends = res.data.response.trends.map(item => {
+            item.site_description = item.sites.map(it => it.title).join(', ');
+            return item;
+          });
+
+          if (res.data.response.next_max_id) {
+            setMaxId(res.data.response.next_max_id); // 트랜드 로드 시 maxId 이하를 가져옴
+          }
+
+          setTrends(prev => {
+            if (prev.length >= 0) {
+              return prev.concat(_trends);
+            } else {
+              return _trends;
+            }
+          });
+        })
+        .catch(e => {
+          console.error(e);
+        })
+        .finally(e => {
+          setLoading(false);
+        });
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (tabName === 'new' || tabName === 'nsfw') {
+      loadTrends();
+    }
+  };
+
   const renderItem = ({item}) => (
-    <TrendList trend={item} navigation={props.navigation}/>
+    <TrendList trend={item} navigation={navigation}/>
   );
 
   const memoizedValue = useCallback(renderItem, []);
-  const keyExtractor = useCallback(item => item.id,[]);
+  const keyExtractor = useCallback(item => item.id, []);
 
   return (
-    <TrendContainerView
-      contentInsetAdjustmentBehavior="automatic"
-      darkMode={props.isDarkMode}>
+    <TrendContainerView contentInsetAdjustmentBehavior="automatic">
       <TrendFlatList
-        data={props.trends}
+        data={trends}
         renderItem={memoizedValue}
         keyExtractor={keyExtractor}
-        contentContainerStyle={{ paddingBottom: 300 }}
+        contentContainerStyle={{paddingBottom: 100}}
+        refreshing={loading}
+        onRefresh={handleRefresh}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={1}
       />
     </TrendContainerView>
   );

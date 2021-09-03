@@ -71,7 +71,6 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
 
   useEffect(() => {
     // 첫 렌더링 시, 트렌드 데이터를 가져온다.
-    console.log('===============================');
     http.getTrend(trendCid).then(res => {
       setMyTrendLike(res.data.response.my_trend_action);
       let _trend = res.data.response.trend;

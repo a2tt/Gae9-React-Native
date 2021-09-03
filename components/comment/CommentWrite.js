@@ -47,7 +47,6 @@ export const CommentWrite: () => Node = ({trendCid, parentId = null, cb = null})
   const [text, setText] = useState('');
 
   const writeComment = () => {
-    console.log(text);
     http
       .createComment(trendCid, text, parentId)
       .then(res => {

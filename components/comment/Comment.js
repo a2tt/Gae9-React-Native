@@ -79,7 +79,6 @@ export const Comment: () => Node = ({navigation, comment}) => {
 
   const declareComment = commentId => {
     http.reportComment(commentId).then(res => {
-      console.log(res)
       setToastMsg('신고가 접수되었습니다,');
     });
   };

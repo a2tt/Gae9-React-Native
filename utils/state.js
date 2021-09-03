@@ -11,6 +11,11 @@ export const toastMsgState = atom({
   default: '', // written timestamp
 });
 
+export const currTabState = atom({
+  key: 'currTab',
+  default: 'new',
+});
+
 export const commentWrittenState = atom({
   key: 'commentWritten',
   default: 0, // written timestamp

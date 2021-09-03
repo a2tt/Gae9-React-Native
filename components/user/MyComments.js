@@ -11,8 +11,6 @@ export const MyComment: () => Node = ({route, navigation}) => {
 
   useEffect(() => {
     http.userComments().then(res => {
-
-      res.data.response.comments.forEach(item => console.log(item));
       setComments(res.data.response.comments);
     });
   }, []);

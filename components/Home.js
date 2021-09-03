@@ -17,10 +17,11 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {faSpinner} from '@fortawesome/free-solid-svg-icons';
 
 import {http} from '../utils/http';
-import {useStateCallback} from '../utils/useStateCallback';
 import {Tab} from './layout/Header';
 import {TrendContainer} from './trend/TrendList';
 import {FontAwesomeSpin} from '../utils/fontAweSome';
+import {useRecoilState} from 'recoil/native/recoil';
+import {currTabState} from '../utils/state';
 
 export const Home: () => Node = props => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -39,77 +40,15 @@ export const Home: () => Node = props => {
     },
   ];
 
-  const loadTrends = () => {
-    /* 게시글 로딩 */
-    if (loading) {
-      return;
-    }
-
-    setLoading(true);
-    (currTab === 'hot'
-        ? http.getHottestTrends()
-        : currTab === 'new'
-          ? http.getTrends(maxId)
-          : http.getNsfwTrends()
-    )
-      .then(res => {
-        // let lastId = 0;
-        let _trends = res.data.response.trends.map(item => {
-          item.site_description = item.sites.map(it => it.title).join(', ');
-          return item;
-        });
-
-        if (res.data.response.next_max_id) {
-          setMaxId(res.data.response.next_max_id); // 트랜드 로드 시 maxId 이하를 가져옴
-        }
-
-        setTrends(prev => {
-          prev[currTab] = prev[currTab].concat(_trends);
-          return prev;
-        });
-      })
-      .catch(e => {
-        console.error(e);
-      })
-      .finally(e => {
-        setLoading(false);
-      });
-  };
-
-  const [trends, setTrends] = useState(
-    tabs
-      .map(item => item.name)
-      .reduce((obj, x) => {
-        obj[x] = [];
-        return obj;
-      }, {}),
-  );
-  const [currTab, _setCurrTab] = useStateCallback('new'); // setState 에 대한 async callback
-  const [maxId, setMaxId] = useState(0);
-  const [loading, setLoading] = useState(false);
-
-  const setCurrTab = newTab => {
-    _setCurrTab(newTab, () => {
-    });
-  };
-
-  useEffect(() => {
-    if (trends[currTab].length === 0) {
-      loadTrends();
-    }
-  }, [currTab]);
-
-  useEffect(() => {
-    /* 트랜드 변경 시 출력 (디버깅용) */
-    // for (const tab in trends) {
-    //   console.log(tab, trends[tab].length);
-    // }
-    // console.log(Object.keys(trends).length, maxId);
-  }, [trends]);
-
-  useEffect(() => {
-    console.log('first render');
-  }, []);
+  // const [trends, setTrends] = useState(
+  //   tabs
+  //     .map(item => item.name)
+  //     .reduce((obj, x) => {
+  //       obj[x] = [];
+  //       return obj;
+  //     }, {}),
+  // );
+  const [currTab, setCurrTab] = useRecoilState(currTabState);
 
   return (
     <Gae9SafeAreaView darkMode={isDarkMode}>
@@ -130,21 +69,15 @@ export const Home: () => Node = props => {
       </TabWrapper>
 
       {currTab === 'new' && (
-        <MoreView>
-          <MoreText onPress={e => loadTrends()}>
-            {loading ? (
-              <FontAwesomeSpin
-                icon={faSpinner}
-                style={{fontSize: 0, color: 'yellow'}}
-              />
-            ) : (
-              '더 보기'
-            )}
-          </MoreText>
-        </MoreView>
+        <TrendContainer navigation={props.navigation} tabName="new" infinite={true}/>
+      )}
+      {currTab === 'hot' && (
+        <TrendContainer navigation={props.navigation} tabName="hot"/>
+      )}
+      {currTab === 'nsfw' && (
+        <TrendContainer navigation={props.navigation} tabName="nsfw"/>
       )}
 
-      <TrendContainer navigation={props.navigation} trends={trends[currTab]} isdarkMode={isDarkMode}/>
     </Gae9SafeAreaView>
   );
 };
