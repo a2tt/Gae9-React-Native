@@ -1,25 +1,18 @@
 import 'react-native-gesture-handler';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 import type {Node} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   Text,
-  useColorScheme,
   View,
   FlatList,
   TouchableOpacity,
-  Dimensions,
   StyleSheet,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import styled from 'styled-components/native';
 import {http} from '../../utils/http';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faComments} from '@fortawesome/free-solid-svg-icons';
 import TimeAgo from 'react-native-timeago';
-import {stringColor} from '../../utils/stringColor';
 import {
   commentWrittenState,
   toastMsgState,
@@ -44,7 +37,9 @@ export const CommentContainer: () => Node = ({route, navigation}) => {
   }, [trend, commentWritten]);
 
   useEffect(() => {
-    setLoaded(true);
+    if (comments.length > 0) {
+      setLoaded(true);
+    }
   }, [comments]);
 
   const renderItem = ({item}) => (

@@ -2,13 +2,8 @@ import 'react-native-gesture-handler';
 import React, {useState, useEffect, useCallback} from 'react';
 import type {Node} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   Text,
-  useColorScheme,
   View,
-  FlatList,
   Image,
   TouchableOpacity,
   Dimensions,
@@ -66,8 +61,8 @@ export const TrendDetail: () => Node = ({route, navigation}) => {
   const trendCid = route.params.trendCid;
   const [trend, setTrend] = useRecoilState(trendState);
   const [imageSize, setImageSize] = useState({});
-  const [myTrendLike, setMyTrendLike] = useRecoilState(myTrendLikeState);
-  const [trendLike, setTrendLike] = useRecoilState(trendLikeState);
+  const [, setMyTrendLike] = useRecoilState(myTrendLikeState);
+  const [, setTrendLike] = useRecoilState(trendLikeState);
 
   useEffect(() => {
     // 첫 렌더링 시, 트렌드 데이터를 가져온다.
@@ -157,10 +152,6 @@ const BelowImage: () => Node = ({route, navigation, trend}) => {
 const ImageFlatList = styled.FlatList`
   text-align: center;
 `;
-
-const TrendScrollView = styled.ScrollView``;
-
-const HeaderView = styled.View``;
 
 const ContentView = styled.View`
   flex: 1;

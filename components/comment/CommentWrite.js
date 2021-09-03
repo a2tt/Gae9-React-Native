@@ -41,7 +41,11 @@ export const ReplyCommentWrite: () => Node = ({route, navigation}) => {
 /**
  * 디테일뷰 하단 댓글 작성 컴포넌트
  * */
-export const CommentWrite: () => Node = ({trendCid, parentId = null, cb = null}) => {
+export const CommentWrite: () => Node = ({
+  trendCid,
+  parentId = null,
+  cb = null,
+}) => {
   const multiline = !!parentId;
   const [, setCommentWritten] = useRecoilState(commentWrittenState);
   const [text, setText] = useState('');
