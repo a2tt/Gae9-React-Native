@@ -9,7 +9,7 @@ import {TrendContainer} from './trend/TrendList';
 import {useRecoilState} from 'recoil/native/recoil';
 import {currTabState} from '../utils/atom';
 
-export const Home: () => Node = props => {
+export const Home: () => Node = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
   const tabs = [
     {
@@ -34,13 +34,13 @@ export const Home: () => Node = props => {
       <TabWrapper tabs={tabs}/>
 
       {currTab === 'new' && (
-        <TrendContainer navigation={props.navigation} tabName="new" infinite={true}/>
+        <TrendContainer navigation={navigation} tabName="new" infinite={true}/>
       )}
       {currTab === 'hot' && (
-        <TrendContainer navigation={props.navigation} tabName="hot"/>
+        <TrendContainer navigation={navigation} tabName="hot" infinite={false}/>
       )}
       {currTab === 'nsfw' && (
-        <TrendContainer navigation={props.navigation} tabName="nsfw"/>
+        <TrendContainer navigation={navigation} tabName="nsfw" infinite={false}/>
       )}
 
     </Gae9SafeAreaView>

@@ -2,33 +2,29 @@ import React, {useEffect, useState, useCallback} from 'react';
 import type {Node} from 'react';
 import {TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
-
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {useRecoilState} from 'recoil/native/recoil';
-import {currTabState} from '../../utils/atom';
 import {http} from '../../utils/http';
 
-const TrendList: () => Node = props => {
+const TrendItem: () => Node = ({navigation, trend}) => {
   return (
     <TouchableOpacity
       onPress={e => {
-        props.navigation.navigate('TrendDetail', {
-          trendCid: props.trend.id,
+        navigation.navigate('TrendDetail', {
+          trendCid: trend.id,
         });
       }}>
       <TrendView>
-        <TrendThumbImage source={{uri: props.trend.thumb_url}}/>
+        <TrendThumbImage source={{uri: trend.thumb_url}}/>
         <TrendTextView>
           <TrendTitleText numberOfLines={2}>
-            {props.trend.title}
+            {trend.title}
           </TrendTitleText>
           <TrendMetaText>
             <TrendMetaViewText>
-              {props.trend.view_cnt} view&nbsp;&nbsp;&nbsp;&nbsp;
+              {trend.view_cnt} view&nbsp;&nbsp;&nbsp;&nbsp;
             </TrendMetaViewText>
             <TrendMetaCommentText>
               <TrendCommentImage source={require('../../static/comment.png')}/>
-              &nbsp;{props.trend.comments_cnt}
+              &nbsp;{trend.comments_cnt}
             </TrendMetaCommentText>
           </TrendMetaText>
         </TrendTextView>
@@ -50,12 +46,6 @@ export const TrendContainer: () => Node = ({navigation, tabName, infinite}) => {
     }
   }, [needLoading]);
 
-  const handleRefresh = () => {
-    setTrends([]);
-    setMaxId(0);
-    setNeedLoading(true);
-  };
-
   const loadTrends = () => {
     /* 게시글 로딩 */
     if (loading) {
@@ -63,70 +53,55 @@ export const TrendContainer: () => Node = ({navigation, tabName, infinite}) => {
     }
 
     setLoading(true);
-    if (tabName === 'nsfw') {
-      http
-        .getNsfwTrends()
-        .then(res => {
-          let _trends = res.data.trends.map(item => {
-            item.site_description = item.sites.map(it => it.title).join(', ');
-            return item;
-          });
+    (tabName === 'hot'
+      ? http.getHottestTrends()
+      : tabName === 'new'
+        ? http.getTrends(maxId)
+        : http.getNsfwTrends())
+      .then(res => {
+        saveTrends(res.data.response?.trends || res.data.trends);
 
-          _trends.forEach(item => {
-            console.log(item.title);
-          });
+        if (res.data.response?.next_max_id) {
+          setMaxId(res.data.response.next_max_id); // 트랜드 로드 시 maxId 이하를 가져옴
+        }
+      })
+      .catch(e => {
+        console.error(e);
+      })
+      .finally(e => {
+        setLoading(false);
+      });
+  };
 
-          setTrends(prev => {
-            if (prev.length >= 0) {
-              return prev.concat(_trends);
-            } else {
-              return _trends;
-            }
-          });
-        })
-        .catch(e => {
-          console.error(e);
-        })
-        .finally(e => {
-          setLoading(false);
-        });
-    } else {
-      (tabName === 'hot' ? http.getHottestTrends() : http.getTrends(maxId))
-        .then(res => {
-          let _trends = res.data.response.trends.map(item => {
-            item.site_description = item.sites.map(it => it.title).join(', ');
-            return item;
-          });
+  const saveTrends = trendData => {
+    let _trends = trendData.map(item => {
+      item.site_description = item.sites.map(it => it.title).join(', ');
+      return item;
+    });
 
-          if (res.data.response.next_max_id) {
-            setMaxId(res.data.response.next_max_id); // 트랜드 로드 시 maxId 이하를 가져옴
-          }
+    setTrends(prev => {
+      if (prev.length >= 0) {
+        return prev.concat(_trends);
+      } else {
+        return _trends;
+      }
+    });
+  };
 
-          setTrends(prev => {
-            if (prev.length >= 0) {
-              return prev.concat(_trends);
-            } else {
-              return _trends;
-            }
-          });
-        })
-        .catch(e => {
-          console.error(e);
-        })
-        .finally(e => {
-          setLoading(false);
-        });
-    }
+  const handleRefresh = () => {
+    setTrends([]);
+    setMaxId(0);
+    setNeedLoading(true);
   };
 
   const handleLoadMore = () => {
-    if (tabName === 'new' || tabName === 'nsfw') {
+    if (infinite && (tabName === 'new' || tabName === 'nsfw')) {
       loadTrends();
     }
   };
 
   const renderItem = ({item}) => (
-    <TrendList trend={item} navigation={navigation}/>
+    <TrendItem trend={item} navigation={navigation}/>
   );
 
   const memoizedValue = useCallback(renderItem, []);
@@ -148,9 +123,7 @@ export const TrendContainer: () => Node = ({navigation, tabName, infinite}) => {
   );
 };
 
-const TrendContainerView = styled.View`
-  background-color: ${props => (props.darkMode ? Colors.darker : Colors.white)};
-`;
+const TrendContainerView = styled.View``;
 
 const TrendFlatList = styled.FlatList``;
 
