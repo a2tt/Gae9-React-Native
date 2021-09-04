@@ -16,7 +16,6 @@ import {
   KAKAO_CREDENTIAL,
   FACEBOOK_CREDENTIAL,
 } from '../../constants';
-import {View} from 'react-native';
 
 const gae9ApiUri = 'https://gae9.com/api';
 const redirectUri = {
@@ -61,24 +60,30 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
     setTimeout(() => {
       setVisible(true);
     }, 1000);
+    console.log(data);
 
-    let resp = JSON.parse(data);
-    if (resp.meta.status !== 200) {
-      setToastMsg(resp.meta.message);
+    try {
+      let resp = JSON.parse(data);
+      if (resp.meta.status !== 200) {
+        setToastMsg(resp.meta.message);
+        navigation.navigate('Login');
+      } else {
+        setOauthProvider(route.params.provider);
+
+        // axios interceptor 에서 사용하기 위해 promiseSetRecoil 사용
+        await promiseSetRecoil(oauthTokenState, resp.response.token);
+        await promiseGetRecoil(oauthTokenState);
+        onLogin();
+
+        setToastMsg('로그인 되었습니다.');
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Home'}],
+        });
+      }
+    } catch (e) {
+      setToastMsg('로그인 실패');
       navigation.navigate('Login');
-    } else {
-      setOauthProvider(route.params.provider);
-
-      // axios interceptor 에서 사용하기 위해 promiseSetRecoil 사용
-      await promiseSetRecoil(oauthTokenState, resp.response.token);
-      await promiseGetRecoil(oauthTokenState);
-      onLogin();
-
-      setToastMsg('로그인 되었습니다.');
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Home'}],
-      });
     }
   };
 
@@ -100,23 +105,18 @@ export const OauthWebViewContainer: () => Node = ({route, navigation}) => {
     try {
       let jsonResp = JSON.parse(document.documentElement.innerText);
       window.ReactNativeWebView.postMessage(document.documentElement.innerText);
-      window.location.href="";
     } catch (e) {}
   }, 300)
   true;
 `;
 
   return (
-    <View>
-      {visible && (
-        <WebView
-          onMessage={handleOnMessage}
-          ref={_ref => (webviewRef = _ref)}
-          source={{uri: targetUri}}
-          javaScriptEnable={true}
-          injectedJavaScript={jsCode}
-        />
-      )}
-    </View>
+    <WebView
+      onMessage={handleOnMessage}
+      ref={_ref => (webviewRef = _ref)}
+      source={{uri: targetUri}}
+      javaScriptEnable={true}
+      injectedJavaScript={jsCode}
+    />
   );
 };

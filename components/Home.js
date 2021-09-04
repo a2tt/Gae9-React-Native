@@ -40,7 +40,7 @@ export const Home: () => Node = ({navigation}) => {
         <TrendContainer navigation={navigation} tabName="hot" infinite={false}/>
       )}
       {currTab === 'nsfw' && (
-        <TrendContainer navigation={navigation} tabName="nsfw" infinite={false}/>
+        <TrendContainer navigation={navigation} tabName="nsfw" infinite={true}/>
       )}
 
     </Gae9SafeAreaView>
